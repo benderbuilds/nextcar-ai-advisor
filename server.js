@@ -373,3 +373,87 @@ app.listen(PORT, () => {
     console.log('   - STRIPE_SECRET_KEY');
     console.log('   - STRIPE_WEBHOOK_SECRET (after webhook setup)');
 });
+// Serve concierge success page
+app.get('/concierge-success', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'concierge-success.html'));
+});
+
+// Handle concierge form submission
+app.post('/api/submit-concierge', async (req, res) => {
+    try {
+        const {
+            firstName,
+            lastName,
+            email,
+            phone,
+            budget,
+            timeline,
+            preferredContact,
+            currentVehicle,
+            mustHaves,
+            additionalInfo
+        } = req.body;
+
+        // Here you would typically:
+        // 1. Save to database
+        // 2. Send email notification to your team
+        // 3. Send confirmation email to customer
+        // 4. Add to CRM system
+
+        console.log('New concierge lead:', {
+            name: `${firstName} ${lastName}`,
+            email,
+            phone,
+            budget,
+            timeline
+        });
+
+        // For now, just log the submission
+        // In production, you'd integrate with:
+        // - Email service (SendGrid, Mailgun, etc.)
+        // - CRM (HubSpot, Salesforce, etc.)
+        // - Database (PostgreSQL, MongoDB, etc.)
+
+        res.json({ 
+            success: true, 
+            message: 'Information received successfully' 
+        });
+
+    } catch (error) {
+        console.error('Error submitting concierge form:', error);
+        res.status(500).json({ 
+            error: 'Failed to submit information' 
+        });
+    }
+});
+
+// Update the upsell payment to redirect to concierge form
+app.post('/api/create-upsell-payment', async (req, res) => {
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: 'Premium Car Concierge Service',
+                        description: 'Complete car buying service: sourcing, negotiation, and delivery. Skip the dealership entirely.'
+                    },
+                    unit_amount: 54900, // $549.00
+                },
+                quantity: 1,
+            }],
+            mode: 'payment',
+            success_url: `${req.headers.origin}/concierge-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${req.headers.origin}/chat`,
+            metadata: {
+                service: 'premium_concierge'
+            }
+        });
+
+        res.json({ sessionId: session.id });
+    } catch (error) {
+        console.error('Error creating upsell payment:', error);
+        res.status(500).json({ error: 'Failed to create payment session' });
+    }
+});
