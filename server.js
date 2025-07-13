@@ -380,7 +380,7 @@ app.post('/api/submit-concierge', async (req, res) => {
         // Email to your team
         const teamEmail = {
             to: 'nextcarconcierge@gmail.com',
-            from: 'hello@nextcarconierge.com',
+            from: 'nextcarconcierge@gmail.com',
             subject: `🚗 New Premium Concierge Lead: ${firstName} ${lastName}`,
             html: `
                 <h2>New Premium Concierge Customer ($549 paid)</h2>
@@ -413,7 +413,7 @@ app.post('/api/submit-concierge', async (req, res) => {
         // Customer confirmation email
         const customerEmail = {
             to: email,
-            from: 'hello@nextcarconierge.com',
+            from: 'nextcarconcierge@gmail.com',
             subject: 'Welcome to NextCar Premium Concierge Service!',
             html: `
                 <h2>Thank you, ${firstName}! 🎉</h2>
