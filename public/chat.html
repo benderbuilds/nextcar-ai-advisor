@@ -6,952 +6,304 @@
     <title>AI Car Advisor - NextCar Concierge</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Auto-focus on input
-            document.getElementById('messageInput').focus();
-        });
-    </script>
-</body>
-</html>
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050A14;
-            color: #ffffff;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #0A1525;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Header */
-        .chat-header {
-            background: linear-gradient(135deg, #D4AF37 0%, #B8961F 100%);
-            color: #050A14;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-
-        .chat-header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .chat-header p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .ai-status {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #22c55e;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Chat Messages */
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background-color: #050A14;
-            scroll-behavior: smooth;
-        }
-
-        .message {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 12px;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message.user {
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-
-        .message.ai .message-avatar {
-            background-color: #D4AF37;
-            color: #050A14;
-        }
-
-        .message.user .message-avatar {
-            background-color: #4f46e5;
-            color: white;
-        }
-
-        .message-content {
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 12px 16px;
-            border-radius: 18px;
-            max-width: 70%;
-            line-height: 1.5;
-        }
-
-        .message.ai .message-content {
-            background-color: rgba(212, 175, 55, 0.1);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .message.user .message-content {
-            background-color: rgba(79, 70, 229, 0.2);
-            border: 1px solid rgba(79, 70, 229, 0.3);
-        }
-
-        /* Typing Indicator */
-        .typing-indicator {
-            display: none;
-            margin-bottom: 20px;
-        }
-
-        .typing-indicator .message-content {
-            background-color: rgba(212, 175, 55, 0.1);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            padding: 16px;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 4px;
-        }
-
-        .typing-dots span {
-            width: 8px;
-            height: 8px;
-            background-color: #D4AF37;
-            border-radius: 50%;
-            animation: typing 1.4s infinite ease-in-out;
-        }
-
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes typing {
-            0%, 80%, 100% {
-                transform: scale(0);
-                opacity: 0.5;
-            }
-            40% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Chat Input */
-        .chat-input {
-            padding: 20px;
-            background-color: #0A1525;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .input-container {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
-        .message-input {
-            flex: 1;
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 12px 16px;
-            color: #ffffff;
-            font-size: 1rem;
-            resize: none;
-            min-height: 44px;
-            max-height: 120px;
-            line-height: 1.4;
-            transition: all 0.3s ease;
-        }
-
-        .message-input:focus {
-            outline: none;
-            border-color: #D4AF37;
-            background-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .message-input::placeholder {
-            color: #B0B6C3;
-        }
-
-        .send-button {
-            background-color: #D4AF37;
-            color: #050A14;
-            border: none;
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-        }
-
-        .send-button:hover {
-            background-color: #B8961F;
-            transform: scale(1.05);
-        }
-
-        .send-button:disabled {
-            background-color: rgba(212, 175, 55, 0.3);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Welcome Message */
-        .welcome-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: #B0B6C3;
-        }
-
-        .welcome-message h2 {
-            color: #D4AF37;
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-        }
-
-        .welcome-message p {
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .quick-start-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
-        .quick-start-btn {
-            background-color: rgba(212, 175, 55, 0.1);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: #D4AF37;
-            padding: 10px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .quick-start-btn:hover {
-            background-color: rgba(212, 175, 55, 0.2);
-            transform: translateY(-2px);
-        }
-
-        /* Results Section */
-        .results-section {
-            display: none;
-            padding: 20px;
-            background-color: #050A14;
-            border-top: 3px solid #D4AF37;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .results-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .results-header h2 {
-            color: #D4AF37;
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .car-recommendation {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #D4AF37;
-        }
-
-        .enhanced-listing {
-            border-left: 4px solid #D4AF37;
-            margin-bottom: 25px;
-        }
-
-        .listing-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-        }
-
-        .listing-source {
-            font-size: 0.9rem;
-            color: #D4AF37;
-            font-weight: 500;
-        }
-
-        .car-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 10px;
-        }
-
-        .car-price {
-            font-size: 1.1rem;
-            color: #D4AF37;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .car-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .detail-item {
-            background-color: rgba(255, 255, 255, 0.03);
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .detail-label {
-            font-size: 0.8rem;
-            color: #B0B6C3;
-            margin-bottom: 5px;
-        }
-
-        .detail-value {
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .listing-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .listing-actions .btn {
-            padding: 10px 15px;
-            font-size: 0.9rem;
-            text-align: center;
-            text-decoration: none;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background-color: #D4AF37;
-            color: #050A14;
-        }
-
-        .btn-primary:hover {
-            background-color: #B8961F;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: #D4AF37;
-            border: 2px solid #D4AF37;
-        }
-
-        .btn-secondary:hover {
-            background-color: #D4AF37;
-            color: #050A14;
-            transform: translateY(-2px);
-        }
-
-        .upsell-cta {
-            background: linear-gradient(135deg, #D4AF37 0%, #B8961F 100%);
-            color: #050A14;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .upsell-cta h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-
-        .upsell-cta p {
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-
-        .upsell-btn {
-            background-color: #050A14;
-            color: #D4AF37;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .upsell-btn:hover {
-            background-color: #0A1525;
-            transform: translateY(-2px);
-        }
-
-        .search-info {
-            background-color: rgba(255, 255, 255, 0.03);
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .search-info h4 {
-            color: #D4AF37;
-            margin-bottom: 10px;
-        }
-
-        .search-info p {
-            color: #B0B6C3;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .container {
-                height: 100vh;
-            }
-
-            .chat-header {
-                padding: 15px;
-            }
-
-            .chat-header h1 {
-                font-size: 1.2rem;
-            }
-
-            .ai-status {
-                position: static;
-                transform: none;
-                justify-content: center;
-                margin-top: 10px;
-            }
-
-            .message-content {
-                max-width: 85%;
-            }
-
-            .chat-input {
-                padding: 15px;
-            }
-
-            .car-details {
-                grid-template-columns: 1fr;
-            }
-
-            .listing-header {
-                flex-direction: column;
-            }
-            
-            .listing-actions {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="chat-header">
-            <h1>🤖 AI Car Advisor</h1>
-            <p>64 years of automotive expertise at your fingertips</p>
-            <div class="ai-status">
-                <div class="status-dot"></div>
-                <span>AI Online</span>
-            </div>
-        </div>
+<body style="font-family: 'Inter', sans-serif; background-color: #050A14; color: #ffffff; margin: 0; padding: 20px;">
 
-        <!-- Chat Messages -->
-        <div class="chat-messages" id="chatMessages">
-            <div class="welcome-message" id="welcomeMessage">
-                <h2>Welcome to Your AI Car Advisor!</h2>
-                <p>I'll help you find the perfect car based on your needs, budget, and lifestyle. Let's start with a quick conversation.</p>
-                <div class="quick-start-buttons">
-                    <button class="quick-start-btn" onclick="sendQuickMessage('I need help choosing a car for my family in Des Moines')">🚗 Family car recommendations</button>
-                    <button class="quick-start-btn" onclick="sendQuickMessage('What\'s the best car for my daily commute in Iowa?')">🛣️ Best for commuting</button>
-                    <button class="quick-start-btn" onclick="sendQuickMessage('I want a reliable car under $25,000 in my area')">💰 Budget-friendly options</button>
-                    <button class="quick-start-btn" onclick="sendQuickMessage('Tell me about electric vehicles available in Iowa')">⚡ Electric vehicles</button>
-                </div>
-            </div>
+<div style="max-width: 800px; margin: 0 auto; background-color: #0A1525; border-radius: 12px; padding: 20px;">
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #D4AF37 0%, #B8961F 100%); color: #050A14; padding: 20px; text-align: center; border-radius: 12px; margin-bottom: 20px;">
+        <h1>🤖 AI Car Advisor</h1>
+        <p>64 years of automotive expertise at your fingertips</p>
+    </div>
 
-            <!-- Typing Indicator -->
-            <div class="typing-indicator" id="typingIndicator">
-                <div class="message ai">
-                    <div class="message-avatar">AI</div>
-                    <div class="message-content">
-                        <div class="typing-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Results Section -->
-        <div class="results-section" id="resultsSection">
-            <div class="results-header">
-                <h2>🎯 Your Perfect Car Matches</h2>
-                <p>Based on our conversation, here are your personalized recommendations:</p>
-            </div>
-            <div id="recommendationsContainer"></div>
-            
-            <div class="upsell-cta">
-                <h3>Want us to handle everything?</h3>
-                <p>Let our experts find, negotiate, and deliver your perfect car. Skip the dealership entirely.</p>
-                <button class="upsell-btn" onclick="upgradeToConcierge()">Upgrade to Premium Concierge - $549 →</button>
-            </div>
-        </div>
-
-        <!-- Chat Input -->
-        <div class="chat-input">
-            <div class="input-container">
-                <textarea 
-                    id="messageInput" 
-                    class="message-input" 
-                    placeholder="Tell me about your car needs..."
-                    rows="1"
-                ></textarea>
-                <button id="sendButton" class="send-button" onclick="sendMessage()">
-                    <span>➤</span>
-                </button>
-            </div>
+    <!-- Welcome Message -->
+    <div id="welcomeMessage" style="text-align: center; padding: 40px 20px; color: #B0B6C3;">
+        <h2 style="color: #D4AF37; margin-bottom: 10px;">Welcome to Your AI Car Advisor!</h2>
+        <p style="margin-bottom: 20px;">I'll help you find the perfect car based on your needs, budget, and lifestyle.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto;">
+            <button onclick="startChat('I need help choosing a car for my family in Des Moines')" style="background-color: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; padding: 10px 16px; border-radius: 12px; cursor: pointer;">
+                🚗 Family car recommendations
+            </button>
+            <button onclick="startChat('What is the best car for my daily commute in Iowa?')" style="background-color: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; padding: 10px 16px; border-radius: 12px; cursor: pointer;">
+                🛣️ Best for commuting  
+            </button>
+            <button onclick="startChat('I want a reliable car under $25,000 in my area')" style="background-color: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; padding: 10px 16px; border-radius: 12px; cursor: pointer;">
+                💰 Budget-friendly options
+            </button>
         </div>
     </div>
 
-    <script>
-        <script>
-        // Add these functions FIRST, before anything else
-        function sendQuickMessage(message) {
-            document.getElementById('welcomeMessage').style.display = 'none';
-            addMessage('user', message);
-            processMessage(message);
+    <!-- Chat Messages -->
+    <div id="chatMessages" style="min-height: 300px; max-height: 500px; overflow-y: auto; padding: 20px; background-color: #050A14; border-radius: 12px; margin-bottom: 20px;">
+        <!-- Messages will appear here -->
+    </div>
+
+    <!-- Typing Indicator -->
+    <div id="typingIndicator" style="display: none; padding: 10px 20px; background-color: rgba(212, 175, 55, 0.1); border-radius: 12px; margin-bottom: 20px;">
+        <span style="color: #D4AF37;">AI is typing...</span>
+    </div>
+
+    <!-- Chat Input -->
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" id="messageInput" placeholder="Tell me about your car needs..." style="flex: 1; padding: 12px 16px; background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; color: #ffffff; font-size: 1rem;">
+        <button onclick="sendUserMessage()" style="background-color: #D4AF37; color: #050A14; border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; font-size: 1.2rem;">
+            ➤
+        </button>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsSection" style="display: none; margin-top: 30px; padding: 20px; background-color: #050A14; border-radius: 12px;">
+        <h2 style="color: #D4AF37; text-align: center; margin-bottom: 20px;">🎯 Your Perfect Car Matches</h2>
+        <div id="recommendationsContainer"></div>
+        
+        <div style="background: linear-gradient(135deg, #D4AF37 0%, #B8961F 100%); color: #050A14; padding: 20px; border-radius: 12px; text-align: center; margin-top: 30px;">
+            <h3>Want us to handle everything?</h3>
+            <p>Let our experts find, negotiate, and deliver your perfect car. Skip the dealership entirely.</p>
+            <button onclick="upgradeToFullService()" style="background-color: #050A14; color: #D4AF37; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                Upgrade to Premium Concierge - $549 →
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize Stripe
+const stripe = Stripe('pk_test_51RjN6RCSrwRSSwuqrcimJXZOwVvCxp45XUISpSRc26hnzg9RpN2WncZVj3ntpsUrLyUOF94OdMRyjAwTqMFrvzbG0045mUlr9Q');
+
+// Global variables
+let conversationHistory = [];
+let isProcessing = false;
+let searchResults = [];
+
+// Core functions - defined at the top
+function startChat(message) {
+    document.getElementById('welcomeMessage').style.display = 'none';
+    showMessage('user', message);
+    processAIMessage(message);
+}
+
+function sendUserMessage() {
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    
+    if (!message || isProcessing) return;
+    
+    document.getElementById('welcomeMessage').style.display = 'none';
+    showMessage('user', message);
+    input.value = '';
+    processAIMessage(message);
+}
+
+function showMessage(sender, content) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    
+    const isUser = sender === 'user';
+    const avatarText = isUser ? 'You' : 'AI';
+    const bgColor = isUser ? 'rgba(79, 70, 229, 0.2)' : 'rgba(212, 175, 55, 0.1)';
+    
+    messageDiv.innerHTML = `
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; ${isUser ? 'flex-direction: row-reverse;' : ''}">
+            <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; background-color: ${isUser ? '#4f46e5' : '#D4AF37'}; color: ${isUser ? 'white' : '#050A14'}; flex-shrink: 0;">
+                ${avatarText}
+            </div>
+            <div style="background-color: ${bgColor}; padding: 12px 16px; border-radius: 18px; max-width: 70%; line-height: 1.5;">
+                ${content}
+            </div>
+        </div>
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function showTyping() {
+    document.getElementById('typingIndicator').style.display = 'block';
+}
+
+function hideTyping() {
+    document.getElementById('typingIndicator').style.display = 'none';
+}
+
+async function processAIMessage(message) {
+    if (isProcessing) return;
+    
+    isProcessing = true;
+    showTyping();
+    
+    conversationHistory.push({
+        role: 'user',
+        content: message
+    });
+
+    try {
+        const response = await fetch('/api/chat-enhanced', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                messages: conversationHistory,
+                chatToken: localStorage.getItem('chatToken')
+            })
+        });
+        
+        const data = await response.json();
+        
+        hideTyping();
+        showMessage('ai', data.message);
+        
+        if (data.searchResults && data.searchResults.length > 0) {
+            searchResults = data.searchResults;
+            console.log('Search results received:', searchResults.length, 'listings');
         }
         
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            if (!message || isProcessing) return;
-            document.getElementById('welcomeMessage').style.display = 'none';
-            addMessage('user', message);
-            input.value = '';
-            processMessage(message);
+        conversationHistory.push({
+            role: 'assistant',
+            content: data.message
+        });
+        
+        if (data.readyForRecommendations) {
+            setTimeout(showResults, 1000);
         }
         
-        function addMessage(sender, content) {
-            const messagesContainer = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            messageDiv.innerHTML = `<div class="message-avatar">${sender === 'ai' ? 'AI' : 'You'}</div><div class="message-content">${content}</div>`;
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    } catch (error) {
+        hideTyping();
+        showMessage('ai', 'I apologize, but I encountered an error. Please try again or contact support.');
+        console.error('Chat error:', error);
+    }
+    
+    isProcessing = false;
+}
+
+async function showResults() {
+    try {
+        const response = await fetch('/api/recommendations-enhanced', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                messages: conversationHistory,
+                chatToken: localStorage.getItem('chatToken'),
+                searchResults: searchResults
+            })
+        });
+        
+        const data = await response.json();
+        displayResults(data.recommendations, data.searchPerformed);
+        
+    } catch (error) {
+        console.error('Error getting recommendations:', error);
+    }
+}
+
+function displayResults(recommendations, searchPerformed) {
+    document.getElementById('resultsSection').style.display = 'block';
+    
+    const container = document.getElementById('recommendationsContainer');
+    
+    const recommendationsHTML = recommendations.map(car => `
+        <div style="background-color: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #D4AF37;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <h3 style="color: #ffffff; margin: 0;">${car.title}</h3>
+                <span style="color: #D4AF37; font-size: 0.9rem;">${car.source || 'Expert Database'}</span>
+            </div>
+            
+            <div style="color: #D4AF37; font-size: 1.1rem; font-weight: 600; margin-bottom: 15px;">
+                ${car.estimatedPrice || car.marketPrice || 'Contact for pricing'}
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <strong style="color: #D4AF37;">Why this car:</strong>
+                <p style="margin: 5px 0; color: #B0B6C3;">${car.whyPerfectMatch || car.whyRecommended || 'Perfect match for your needs'}</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                ${car.url && car.url !== '#' ? 
+                    `<a href="${car.url}" target="_blank" style="background-color: #D4AF37; color: #050A14; padding: 10px 15px; text-decoration: none; border-radius: 8px; text-align: center; font-weight: 600;">View Listing →</a>` :
+                    `<button onclick="searchCar('${car.title}')" style="background-color: #D4AF37; color: #050A14; padding: 10px 15px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Search for This Car →</button>`
+                }
+                <button onclick="contactDealer('${car.title}')" style="background-color: transparent; color: #D4AF37; padding: 10px 15px; border: 2px solid #D4AF37; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    Contact Dealer
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = recommendationsHTML;
+    
+    // Scroll to results
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function searchCar(carTitle) {
+    const searchQuery = encodeURIComponent(carTitle + ' Iowa for sale');
+    window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
+}
+
+function contactDealer(carTitle) {
+    const message = `I'm interested in the ${carTitle} recommended by your AI Car Advisor. Please provide more details.`;
+    window.location.href = `mailto:nextcarconcierge@gmail.com?subject=Interest in ${encodeURIComponent(carTitle)}&body=${encodeURIComponent(message)}`;
+}
+
+async function upgradeToFullService() {
+    try {
+        const response = await fetch('/api/create-upsell-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service: 'premium_concierge' })
+        });
+        
+        const { sessionId } = await response.json();
+        
+        const { error } = await stripe.redirectToCheckout({ sessionId: sessionId });
+        
+        if (error) {
+            alert('Payment failed. Please try again.');
         }
         
-        // Then rest of your code...
-        // Initialize Stripe (update with your actual publishable key)
-        const stripe = Stripe('pk_test_51RjN6RCSrwRSSwuqrcimJXZOwVvCxp45XUISpSRc26hnzg9RpN2WncZVj3ntpsUrLyUOF94OdMRyjAwTqMFrvzbG0045mUlr9Q');
+    } catch (error) {
+        alert('Payment failed. Please try again.');
+    }
+}
 
-        let conversationHistory = [];
-        let isProcessing = false;
-        let searchResults = [];
+// Handle payment verification on page load
+window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    
+    if (sessionId) {
+        verifyPayment(sessionId);
+    }
+    
+    // Focus on input
+    document.getElementById('messageInput').focus();
+});
 
-        // Auto-resize textarea
-        const messageInput = document.getElementById('messageInput');
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
+async function verifyPayment(sessionId) {
+    try {
+        const response = await fetch('/api/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
         });
-
-        // Send message on Enter (but allow Shift+Enter for new lines)
-        messageInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-
-        function sendQuickMessage(message) {
-            document.getElementById('welcomeMessage').style.display = 'none';
-            addMessage('user', message);
-            processMessage(message);
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            localStorage.setItem('chatToken', data.chatToken);
         }
+    } catch (error) {
+        console.error('Verification error:', error);
+    }
+}
 
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            
-            if (!message || isProcessing) return;
+// Enter key support
+document.getElementById('messageInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendUserMessage();
+    }
+});
+</script>
 
-            // Hide welcome message
-            document.getElementById('welcomeMessage').style.display = 'none';
-            
-            // Add user message
-            addMessage('user', message);
-            input.value = '';
-            input.style.height = 'auto';
-            
-            // Process message
-            processMessage(message);
-        }
-
-        function addMessage(sender, content) {
-            const messagesContainer = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            messageDiv.innerHTML = `
-                <div class="message-avatar">${sender === 'ai' ? 'AI' : 'You'}</div>
-                <div class="message-content">${content}</div>
-            `;
-            
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function showTyping() {
-            document.getElementById('typingIndicator').style.display = 'block';
-            const messagesContainer = document.getElementById('chatMessages');
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function hideTyping() {
-            document.getElementById('typingIndicator').style.display = 'none';
-        }
-
-        async function processMessage(message) {
-            if (isProcessing) return;
-            
-            isProcessing = true;
-            showTyping();
-            
-            // Add to conversation history
-            conversationHistory.push({
-                role: 'user',
-                content: message
-            });
-
-            try {
-                // Use enhanced chat endpoint
-                const response = await fetch('/api/chat-enhanced', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        messages: conversationHistory,
-                        chatToken: localStorage.getItem('chatToken')
-                    })
-                });
-                
-                const data = await response.json();
-                
-                hideTyping();
-                addMessage('ai', data.message);
-                
-                // Store search results if provided
-                if (data.searchResults && data.searchResults.length > 0) {
-                    searchResults = data.searchResults;
-                    console.log('Search results received:', searchResults.length, 'listings');
-                }
-                
-                conversationHistory.push({
-                    role: 'assistant',
-                    content: data.message
-                });
-                
-                // Check if ready for recommendations
-                if (data.readyForRecommendations) {
-                    showEnhancedResults();
-                    return;
-                }
-                
-            } catch (error) {
-                hideTyping();
-                addMessage('ai', 'I apologize, but I encountered an error. Please try again or contact support.');
-                console.error('Chat error:', error);
-            }
-            
-            isProcessing = false;
-        }
-
-        function showEnhancedResults() {
-            hideTyping();
-            
-            // Hide chat interface
-            document.querySelector('.chat-messages').style.display = 'none';
-            document.querySelector('.chat-input').style.display = 'none';
-            
-            // Show loading message while getting recommendations
-            const resultsSection = document.getElementById('resultsSection');
-            resultsSection.style.display = 'block';
-            resultsSection.innerHTML = `
-                <div class="results-header">
-                    <h2>🔍 Finding Your Perfect Car Matches</h2>
-                    <p>Searching real inventory and analyzing the best options for you...</p>
-                    <div style="text-align: center; margin: 20px 0;">
-                        <div style="color: #D4AF37;">⏳ Analyzing real car listings...</div>
-                    </div>
-                </div>
-            `;
-            
-            // Get enhanced recommendations
-            getEnhancedRecommendations();
-        }
-
-        async function getEnhancedRecommendations() {
-            try {
-                const response = await fetch('/api/recommendations-enhanced', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        messages: conversationHistory,
-                        chatToken: localStorage.getItem('chatToken'),
-                        searchResults: searchResults
-                    })
-                });
-                
-                const data = await response.json();
-                
-                displayEnhancedRecommendations(data.recommendations, data.totalListingsFound, data.searchPerformed);
-                
-            } catch (error) {
-                console.error('Error getting recommendations:', error);
-                document.getElementById('resultsSection').innerHTML = `
-                    <div class="results-header">
-                        <h2>❌ Search Error</h2>
-                        <p>We encountered an issue searching for vehicles. Please contact support.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function displayEnhancedRecommendations(recommendations, totalFound, searchPerformed) {
-            const container = document.getElementById('resultsSection');
-            
-            const searchStatus = searchPerformed ? 
-                `Found ${totalFound || recommendations.length} real listings. Here are your top matches:` :
-                `Based on our automotive expertise, here are your top recommendations:`;
-            
-            const header = `
-                <div class="results-header">
-                    <h2>🎯 Your Perfect Car Matches</h2>
-                    <p>${searchStatus}</p>
-                </div>
-            `;
-            
-            const recommendationsHTML = recommendations.map((car, index) => `
-                <div class="car-recommendation enhanced-listing">
-                    <div class="listing-header">
-                        <div class="car-title">${car.title}</div>
-                        <div class="listing-source">📍 ${car.source || 'Expert Database'}</div>
-                    </div>
-                    
-                    <div class="car-price">
-                        ${car.estimatedPrice || car.marketPrice || 'Contact for pricing'}
-                    </div>
-                    
-                    <div class="car-details">
-                        <div class="detail-item">
-                            <div class="detail-label">Why This Car</div>
-                            <div class="detail-value">${car.whyPerfectMatch || car.whyRecommended || 'Perfect match for your needs'}</div>
-                        </div>
-                        
-                        <div class="detail-item">
-                            <div class="detail-label">Advantages</div>
-                            <div class="detail-value">
-                                ${car.pros ? car.pros.map(pro => `• ${pro}`).join('<br>') : 
-                                  (car.features ? car.features.slice(0,3).map(feature => `• ${feature}`).join('<br>') : 
-                                   '• Reliable and well-reviewed<br>• Good value for money')}
-                            </div>
-                        </div>
-                        
-                        <div class="detail-item">
-                            <div class="detail-label">Considerations</div>
-                            <div class="detail-value">
-                                ${car.cons ? car.cons.map(con => `• ${con}`).join('<br>') : 
-                                  '• Contact dealer for inspection<br>• Verify current availability'}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="listing-actions">
-                        ${car.url && car.url !== '#' ? 
-                            `<a href="${car.url}" target="_blank" class="btn btn-primary">View Full Listing →</a>` :
-                            `<button class="btn btn-primary" onclick="searchForCar('${car.title}')">Search for This Car →</button>`
-                        }
-                        <button class="btn btn-secondary" onclick="contactDealerAbout('${car.title}')">
-                            Contact Dealer
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            const upsellSection = `
-                <div class="upsell-cta">
-                    <h3>Want us to handle everything?</h3>
-                    <p>Let our experts negotiate with dealers, arrange inspections, and coordinate delivery. Skip the hassle entirely.</p>
-                    <button class="upsell-btn" onclick="upgradeToConcierge()">Upgrade to Premium Concierge - $549 →</button>
-                </div>
-                
-                <div class="search-info">
-                    <h4>${searchPerformed ? 'About Your Search' : 'Expert Recommendations'}</h4>
-                    <p>${searchPerformed ? 
-                        'These are real, current listings from active dealers. Pricing and availability may change. Our Premium Concierge service includes verification of vehicle condition, price negotiation, and delivery coordination.' :
-                        'These recommendations are based on our 64 years of automotive expertise. Our Premium Concierge service can help you find specific inventory and negotiate the best deals.'
-                    }</p>
-                </div>
-            `;
-            
-            container.innerHTML = header + recommendationsHTML + upsellSection;
-        }
-
-        function searchForCar(carTitle) {
-            const searchQuery = encodeURIComponent(carTitle + ' Iowa for sale');
-            window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
-        }
-
-        function contactDealerAbout(carTitle) {
-            const message = `I'm interested in the ${carTitle} that was recommended through your AI Car Advisor. Could you provide more details and help me with the next steps?`;
-            window.location.href = `mailto:nextcarconcierge@gmail.com?subject=Interest in ${encodeURIComponent(carTitle)}&body=${encodeURIComponent(message)}`;
-        }
-
-        async function upgradeToConcierge() {
-            try {
-                const carTitles = Array.from(document.querySelectorAll('.car-title')).map(el => el.textContent);
-                
-                const response = await fetch('/api/create-upsell-payment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        service: 'premium_concierge',
-                        interestedCars: carTitles
-                    })
-                });
-                
-                const { sessionId } = await response.json();
-                
-                const { error } = await stripe.redirectToCheckout({
-                    sessionId: sessionId
-                });
-                
-                if (error) {
-                    console.error('Stripe error:', error);
-                    alert('Payment failed. Please try again.');
-                }
-                
-            } catch (error) {
-                console.error('Payment error:', error);
-                alert('Payment failed. Please try again.');
-            }
-        }
-
-        // Check for successful payment on page load
-        window.addEventListener('load', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sessionId = urlParams.get('session_id');
-            
-            if (sessionId) {
-                verifyPayment(sessionId);
-            }
-        });
-
-        async function verifyPayment(sessionId) {
-            try {
-                const response = await fetch('/api/verify-payment', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ sessionId })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    localStorage.setItem('chatToken', data.chatToken);
-                    // Payment verified, chat is ready
-                } else {
-                    alert('Payment verification failed. Please contact support.');
-                }
-            } catch (error) {
-                console.error('Verification error:', error);
-                alert('Payment verification failed. Please contact support.');
-            }
-        }
+</body>
+</html>
