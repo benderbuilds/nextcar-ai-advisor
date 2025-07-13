@@ -5,6 +5,8 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const OpenAI = require('openai');
 const path = require('path');
 require('dotenv').config();
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -371,42 +373,78 @@ app.get('/concierge-success', (req, res) => {
 app.post('/api/submit-concierge', async (req, res) => {
     try {
         const {
-            firstName,
-            lastName,
-            email,
-            phone,
-            budget,
-            timeline,
-            preferredContact,
-            currentVehicle,
-            mustHaves,
-            additionalInfo
+            firstName, lastName, email, phone, budget, timeline, 
+            preferredContact, currentVehicle, mustHaves, additionalInfo
         } = req.body;
 
-        // Here you would typically:
-        // 1. Save to database
-        // 2. Send email notification to your team
-        // 3. Send confirmation email to customer
-        // 4. Add to CRM system
+        // Email to your team
+        const teamEmail = {
+            to: 'nextcarconcierge@gmail.com',
+            from: 'hello@nextcarconierge.com',
+            subject: `🚗 New Premium Concierge Lead: ${firstName} ${lastName}`,
+            html: `
+                <h2>New Premium Concierge Customer ($549 paid)</h2>
+                
+                <h3>Contact Information:</h3>
+                <ul>
+                    <li><strong>Name:</strong> ${firstName} ${lastName}</li>
+                    <li><strong>Email:</strong> ${email}</li>
+                    <li><strong>Phone:</strong> ${phone}</li>
+                    <li><strong>Preferred Contact:</strong> ${preferredContact}</li>
+                </ul>
+                
+                <h3>Car Requirements:</h3>
+                <ul>
+                    <li><strong>Budget:</strong> ${budget || 'Not specified'}</li>
+                    <li><strong>Timeline:</strong> ${timeline || 'Not specified'}</li>
+                    <li><strong>Current Vehicle:</strong> ${currentVehicle || 'None'}</li>
+                </ul>
+                
+                <h3>Must-Have Features:</h3>
+                <p>${mustHaves || 'None specified'}</p>
+                
+                <h3>Additional Information:</h3>
+                <p>${additionalInfo || 'None provided'}</p>
+                
+                <p><strong>Action Required:</strong> Contact customer within 24 hours!</p>
+            `
+        };
 
-        console.log('New concierge lead:', {
-            name: `${firstName} ${lastName}`,
-            email,
-            phone,
-            budget,
-            timeline
-        });
+        // Customer confirmation email
+        const customerEmail = {
+            to: email,
+            from: 'hello@nextcarconierge.com',
+            subject: 'Welcome to NextCar Premium Concierge Service!',
+            html: `
+                <h2>Thank you, ${firstName}! 🎉</h2>
+                
+                <p>We've received your information and one of our automotive experts will contact you within 24 hours.</p>
+                
+                <h3>What happens next:</h3>
+                <ol>
+                    <li>Expert consultation call</li>
+                    <li>Custom car search strategy</li>
+                    <li>Professional negotiation</li>
+                    <li>Delivery coordination</li>
+                </ol>
+                
+                <p>Questions? Reply to this email or contact nextcarconcierge@gmail.com</p>
+                
+                <p>Best regards,<br>The NextCar Concierge Team</p>
+            `
+        };
 
-        // For now, just log the submission
-        // In production, you'd integrate with:
-        // - Email service (SendGrid, Mailgun, etc.)
-        // - CRM (HubSpot, Salesforce, etc.)
-        // - Database (PostgreSQL, MongoDB, etc.)
+        // Send emails
+        await sgMail.send(teamEmail);
+        await sgMail.send(customerEmail);
 
-        res.json({ 
-            success: true, 
-            message: 'Information received successfully' 
-        });
+        res.json({ success: true, message: 'Information received successfully' });
+
+    } catch (error) {
+        console.error('Email error:', error);
+        res.status(500).json({ error: 'Failed to submit information' });
+    }
+});
 
     } catch (error) {
         console.error('Error submitting concierge form:', error);
