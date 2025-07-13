@@ -363,17 +363,6 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) =
 app.get('/health', (req, res) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
-
-// Start server
-app.listen(PORT, () => {
-    console.log(`🚀 NextCar AI Advisor server running on port ${PORT}`);
-    console.log(`📊 Dashboard: http://localhost:${PORT}`);
-    console.log('🔑 Environment variables needed:');
-    console.log('   - OPENAI_API_KEY');
-    console.log('   - STRIPE_SECRET_KEY');
-    console.log('   - STRIPE_WEBHOOK_SECRET (after webhook setup)');
-});
-// Serve concierge success page
 app.get('/concierge-success', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'concierge-success.html'));
 });
@@ -456,4 +445,13 @@ app.post('/api/create-upsell-payment', async (req, res) => {
         console.error('Error creating upsell payment:', error);
         res.status(500).json({ error: 'Failed to create payment session' });
     }
+});
+// Start server
+app.listen(PORT, () => {
+    console.log(`🚀 NextCar AI Advisor server running on port ${PORT}`);
+    console.log(`📊 Dashboard: http://localhost:${PORT}`);
+    console.log('🔑 Environment variables needed:');
+    console.log('   - OPENAI_API_KEY');
+    console.log('   - STRIPE_SECRET_KEY');
+    console.log('   - STRIPE_WEBHOOK_SECRET (after webhook setup)');
 });
