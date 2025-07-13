@@ -470,7 +470,7 @@
             <div class="upsell-cta">
                 <h3>Want us to handle everything?</h3>
                 <p>Let our experts find, negotiate, and deliver your perfect car. Skip the dealership entirely.</p>
-                <button class="upsell-btn" onclick="window.open('#', '_blank')">Upgrade to Premium Concierge - $549 →</button>
+                <button class="upsell-btn" onclick="upgradeToConcierge()">Upgrade to Premium Concierge - $549 →</button>
             </div>
         </div>
 
@@ -698,6 +698,37 @@
             // Auto-focus on input
             document.getElementById('messageInput').focus();
         });
+        async function upgradeToConcierge() {
+    try {
+        const response = await fetch('/api/create-upsell-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                service: 'premium_concierge'
+            })
+        });
+        
+        const { sessionId } = await response.json();
+        
+        // Initialize Stripe (you'll need to add your publishable key)
+        const stripe = Stripe('pk_test_your_publishable_key_here');
+        
+        const { error } = await stripe.redirectToCheckout({
+            sessionId: sessionId
+        });
+        
+        if (error) {
+            console.error('Stripe error:', error);
+            alert('Payment failed. Please try again.');
+        }
+        
+    } catch (error) {
+        console.error('Payment error:', error);
+        alert('Payment failed. Please try again.');
+    }
+}
     </script>
 </body>
 </html>
