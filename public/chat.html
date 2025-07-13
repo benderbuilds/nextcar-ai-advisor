@@ -491,229 +491,213 @@
     </div>
 
     <script>
-        let conversationHistory = [];
-        let isProcessing = false;
+// Enhanced chat.html JavaScript section
+// Replace the existing processMessage function with this enhanced version
 
-        // Auto-resize textarea
-        const messageInput = document.getElementById('messageInput');
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
+let searchResults = [];
 
-        // Send message on Enter (but allow Shift+Enter for new lines)
-        messageInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+async function processMessage(message) {
+    if (isProcessing) return;
+    
+    isProcessing = true;
+    showTyping();
+    
+    // Add to conversation history
+    conversationHistory.push({
+        role: 'user',
+        content: message
+    });
 
-        function sendQuickMessage(message) {
-            document.getElementById('welcomeMessage').style.display = 'none';
-            addMessage('user', message);
-            processMessage(message);
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            
-            if (!message || isProcessing) return;
-
-            // Hide welcome message
-            document.getElementById('welcomeMessage').style.display = 'none';
-            
-            // Add user message
-            addMessage('user', message);
-            input.value = '';
-            input.style.height = 'auto';
-            
-            // Process message
-            processMessage(message);
-        }
-
-        function addMessage(sender, content) {
-            const messagesContainer = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            messageDiv.innerHTML = `
-                <div class="message-avatar">${sender === 'ai' ? 'AI' : 'You'}</div>
-                <div class="message-content">${content}</div>
-            `;
-            
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function showTyping() {
-            document.getElementById('typingIndicator').style.display = 'block';
-            const messagesContainer = document.getElementById('chatMessages');
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function hideTyping() {
-            document.getElementById('typingIndicator').style.display = 'none';
-        }
-
-        async function processMessage(message) {
-            if (isProcessing) return;
-            
-            isProcessing = true;
-            showTyping();
-            
-            // Add to conversation history
-            conversationHistory.push({
-                role: 'user',
-                content: message
-            });
-
-            try {
-                // TODO: Replace with actual API call
-                // const response = await fetch('/api/chat-enhanced', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ messages: conversationHistory })
-                // });
-                // const data = await response.json();
-
-                // Simulate AI response for demo
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                let aiResponse;
-                if (conversationHistory.length === 1) {
-                    aiResponse = "Great! I'd love to help you find the perfect car. To get started, could you tell me:\n\n• What's your budget range?\n• What will you primarily use the car for? (daily commuting, family trips, etc.)\n• Any specific preferences on size or type?";
-                } else if (conversationHistory.length < 4) {
-                    aiResponse = "Perfect! That helps me understand your needs better. Let me ask a few more questions:\n\n• Do you have a preference for fuel type? (gas, hybrid, electric)\n• What features are most important to you? (safety, technology, comfort, etc.)\n• Any brands you particularly like or want to avoid?";
-                } else {
-                    // Show results after enough conversation
-                    showResults();
-                    return;
-                }
-                
-                hideTyping();
-                addMessage('ai', aiResponse);
-                
-                conversationHistory.push({
-                    role: 'assistant',
-                    content: aiResponse
-                });
-                
-            } catch (error) {
-                hideTyping();
-                addMessage('ai', 'I apologize, but I encountered an error. Please try again or contact support.');
-            }
-            
-            isProcessing = false;
-        }
-
-        function showResults() {
-            hideTyping();
-            
-            // Hide chat interface
-            document.querySelector('.chat-messages').style.display = 'none';
-            document.querySelector('.chat-input').style.display = 'none';
-            
-            // Show results
-            document.getElementById('resultsSection').style.display = 'block';
-            
-            // Sample recommendations (this would come from the API)
-            const recommendations = [
-                {
-                    title: "2024 Toyota Camry Hybrid LE",
-                    price: "$28,855 - $31,200",
-                    mpg: "51 city / 53 highway",
-                    safety: "5-star NHTSA rating",
-                    reliability: "Excellent (Toyota reliability)",
-                    features: "Toyota Safety Sense 2.0, 8-inch touchscreen",
-                    dealer: "Toyota of Des Moines",
-                    dealerRating: "4.3/5 stars",
-                    why: "Perfect blend of reliability, fuel efficiency, and value. Ideal for daily commuting with excellent resale value."
-                },
-                {
-                    title: "2024 Honda Accord Sport",
-                    price: "$27,295 - $30,500",
-                    mpg: "32 city / 42 highway",
-                    safety: "5-star NHTSA rating",
-                    reliability: "Excellent (Honda reputation)",
-                    features: "Honda Sensing, wireless CarPlay, sport suspension",
-                    dealer: "Carousel Honda",
-                    dealerRating: "4.5/5 stars",
-                    why: "Sporty yet practical with outstanding build quality. Great for those who want driving enjoyment with reliability."
-                },
-                {
-                    title: "2024 Mazda6 Touring",
-                    price: "$26,700 - $29,900",
-                    mpg: "26 city / 35 highway",
-                    safety: "Top Safety Pick+ IIHS",
-                    reliability: "Above Average",
-                    features: "Premium interior, Bose audio, i-ACTIVSENSE safety",
-                    dealer: "Carousel Mazda",
-                    dealerRating: "4.2/5 stars",
-                    why: "Most premium feel in this price range with exceptional interior quality and driving dynamics."
-                }
-            ];
-            
-            const container = document.getElementById('recommendationsContainer');
-            container.innerHTML = recommendations.map(car => `
-                <div class="car-recommendation">
-                    <div class="car-title">${car.title}</div>
-                    <div class="car-price">Starting at ${car.price}</div>
-                    <div class="car-details">
-                        <div class="detail-item">
-                            <div class="detail-label">Fuel Economy</div>
-                            <div class="detail-value">${car.mpg} MPG</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Safety Rating</div>
-                            <div class="detail-value">${car.safety}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Reliability</div>
-                            <div class="detail-value">${car.reliability}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Key Features</div>
-                            <div class="detail-value">${car.features}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Recommended Dealer</div>
-                            <div class="detail-value">${car.dealer}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Dealer Rating</div>
-                            <div class="detail-value">${car.dealerRating}</div>
-                        </div>
-                    </div>
-                    <p style="color: #B0B6C3; font-style: italic; margin-top: 10px;">
-                        <strong>Why this car:</strong> ${car.why}
-                    </p>
-                </div>
-            `).join('');
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Auto-focus on input
-            document.getElementById('messageInput').focus();
-        });
-        async function upgradeToConcierge() {
     try {
+        // Use enhanced chat endpoint
+        const response = await fetch('/api/chat-enhanced', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                messages: conversationHistory,
+                chatToken: localStorage.getItem('chatToken')
+            })
+        });
+        
+        const data = await response.json();
+        
+        hideTyping();
+        addMessage('ai', data.message);
+        
+        // Store search results if provided
+        if (data.searchResults && data.searchResults.length > 0) {
+            searchResults = data.searchResults;
+            console.log('Search results received:', searchResults.length, 'listings');
+        }
+        
+        conversationHistory.push({
+            role: 'assistant',
+            content: data.message
+        });
+        
+        // Check if ready for recommendations
+        if (data.readyForRecommendations) {
+            // Show enhanced results with real listings
+            showEnhancedResults();
+            return;
+        }
+        
+    } catch (error) {
+        hideTyping();
+        addMessage('ai', 'I apologize, but I encountered an error. Please try again or contact support.');
+    }
+    
+    isProcessing = false;
+}
+
+function showEnhancedResults() {
+    hideTyping();
+    
+    // Hide chat interface
+    document.querySelector('.chat-messages').style.display = 'none';
+    document.querySelector('.chat-input').style.display = 'none';
+    
+    // Show loading message while getting recommendations
+    const resultsSection = document.getElementById('resultsSection');
+    resultsSection.style.display = 'block';
+    resultsSection.innerHTML = `
+        <div class="results-header">
+            <h2>🔍 Finding Your Perfect Car Matches</h2>
+            <p>Searching real inventory and analyzing the best options for you...</p>
+            <div style="text-align: center; margin: 20px 0;">
+                <div style="color: #D4AF37;">⏳ Analyzing real car listings...</div>
+            </div>
+        </div>
+    `;
+    
+    // Get enhanced recommendations
+    getEnhancedRecommendations();
+}
+
+async function getEnhancedRecommendations() {
+    try {
+        const response = await fetch('/api/recommendations-enhanced', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                messages: conversationHistory,
+                chatToken: localStorage.getItem('chatToken'),
+                searchResults: searchResults
+            })
+        });
+        
+        const data = await response.json();
+        
+        displayEnhancedRecommendations(data.recommendations, data.totalListingsFound);
+        
+    } catch (error) {
+        console.error('Error getting recommendations:', error);
+        document.getElementById('resultsSection').innerHTML = `
+            <div class="results-header">
+                <h2>❌ Search Error</h2>
+                <p>We encountered an issue searching for vehicles. Please contact support.</p>
+            </div>
+        `;
+    }
+}
+
+function displayEnhancedRecommendations(recommendations, totalFound) {
+    const container = document.getElementById('resultsSection');
+    
+    const header = `
+        <div class="results-header">
+            <h2>🎯 Your Real Car Matches</h2>
+            <p>Found ${totalFound || recommendations.length} real listings. Here are your top matches:</p>
+        </div>
+    `;
+    
+    const recommendationsHTML = recommendations.map((car, index) => `
+        <div class="car-recommendation enhanced-listing">
+            <div class="listing-header">
+                <div class="car-title">${car.title}</div>
+                <div class="listing-source">📍 Found on ${car.source}</div>
+            </div>
+            
+            <div class="car-price">
+                ${car.estimatedPrice || 'See listing for pricing'}
+            </div>
+            
+            <div class="car-details">
+                <div class="detail-item">
+                    <div class="detail-label">Why This Car</div>
+                    <div class="detail-value">${car.whyPerfectMatch}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Advantages</div>
+                    <div class="detail-value">
+                        ${car.pros ? car.pros.map(pro => `• ${pro}`).join('<br>') : 'See listing for details'}
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Considerations</div>
+                    <div class="detail-value">
+                        ${car.cons ? car.cons.map(con => `• ${con}`).join('<br>') : 'Contact dealer for full details'}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="listing-actions">
+                <a href="${car.url}" target="_blank" class="btn btn-primary">
+                    View Full Listing →
+                </a>
+                <button class="btn btn-secondary" onclick="contactDealerAbout('${car.title}')">
+                    Contact Dealer
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    const upsellSection = `
+        <div class="upsell-cta">
+            <h3>Want us to handle everything?</h3>
+            <p>Let our experts negotiate with these dealers, arrange inspections, and coordinate delivery. Skip the hassle entirely.</p>
+            <button class="upsell-btn" onclick="upgradeToConcierge()">Upgrade to Premium Concierge - $549 →</button>
+        </div>
+        
+        <div class="search-info">
+            <h4>About Your Search</h4>
+            <p>These are real, current listings from active dealers. Pricing and availability may change. Our Premium Concierge service includes verification of vehicle condition, price negotiation, and delivery coordination.</p>
+        </div>
+    `;
+    
+    container.innerHTML = header + recommendationsHTML + upsellSection;
+}
+
+function contactDealerAbout(carTitle) {
+    // Pre-fill contact form with car interest
+    const message = `I'm interested in the ${carTitle} that was recommended through your AI Car Advisor. Could you provide more details and help me with the next steps?`;
+    
+    // You could open a modal or redirect to contact form
+    window.location.href = `/contact?car=${encodeURIComponent(carTitle)}&message=${encodeURIComponent(message)}`;
+}
+
+// Enhanced upgrade function with car context
+async function upgradeToConcierge() {
+    try {
+        // Include information about which cars they're interested in
+        const carTitles = Array.from(document.querySelectorAll('.car-title')).map(el => el.textContent);
+        
         const response = await fetch('/api/create-upsell-payment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                service: 'premium_concierge'
+                service: 'premium_concierge',
+                interestedCars: carTitles
             })
         });
         
         const { sessionId } = await response.json();
         
-        // Initialize Stripe (you'll need to add your publishable key)
-        const stripe = Stripe('pk_test_your_publishable_key_here');
+        const stripe = Stripe('pk_test_your_publishable_key_here'); // Update with your key
         
         const { error } = await stripe.redirectToCheckout({
             sessionId: sessionId
@@ -728,6 +712,78 @@
         console.error('Payment error:', error);
         alert('Payment failed. Please try again.');
     }
+}
+
+// Additional CSS for enhanced listings (add to your chat.html <style> section)
+const enhancedCSS = `
+.enhanced-listing {
+    border-left: 4px solid #D4AF37;
+    margin-bottom: 25px;
+}
+
+.listing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.listing-source {
+    font-size: 0.9rem;
+    color: #D4AF37;
+    font-weight: 500;
+}
+
+.listing-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.listing-actions .btn {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+}
+
+.search-info {
+    background-color: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.search-info h4 {
+    color: #D4AF37;
+    margin-bottom: 10px;
+}
+
+.search-info p {
+    color: #B0B6C3;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .listing-header {
+        flex-direction: column;
+    }
+    
+    .listing-actions {
+        grid-template-columns: 1fr;
+    }
+}
+`;
+
+// Add enhanced CSS to the page
+if (!document.getElementById('enhanced-styles')) {
+    const style = document.createElement('style');
+    style.id = 'enhanced-styles';
+    style.textContent = enhancedCSS;
+    document.head.appendChild(style);
 }
     </script>
 </body>
