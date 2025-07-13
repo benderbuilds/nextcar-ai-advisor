@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Car Advisor - NextCar Concierge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050A14;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #0A1525;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Header */
+        .chat-header {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8961F 100%);
+            color: #050A14;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .chat-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .ai-status {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Chat Messages */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #050A14;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.ai .message-avatar {
+            background-color: #D4AF37;
+            color: #050A14;
+        }
+
+        .message.user .message-avatar {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .message-content {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 70%;
+            line-height: 1.5;
+        }
+
+        .message.ai .message-content {
+            background-color: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .message.user .message-content {
+            background-color: rgba(79, 70, 229, 0.2);
+            border: 1px solid rgba(79, 70, 229, 0.3);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .typing-indicator .message-content {
+            background-color: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 16px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background-color: #D4AF37;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Chat Input */
+        .chat-input {
+            padding: 20px;
+            background-color: #0A1525;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 12px 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            line-height: 1.4;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .message-input::placeholder {
+            color: #B0B6C3;
+        }
+
+        .send-button {
+            background-color: #D4AF37;
+            color: #050A14;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .send-button:hover {
+            background-color: #B8961F;
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            background-color: rgba(212, 175, 55, 0.3);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #B0B6C3;
+        }
+
+        .welcome-message h2 {
+            color: #D4AF37;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .welcome-message p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .quick-start-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .quick-start-btn {
+            background-color: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #D4AF37;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-start-btn:hover {
+            background-color: rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            padding: 20px;
+            background-color: #050A14;
+            border-top: 3px solid #D4AF37;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h2 {
+            color: #D4AF37;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .car-recommendation {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #D4AF37;
+        }
+
+        .car-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .car-price {
+            font-size: 1.1rem;
+            color: #D4AF37;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .car-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #B0B6C3;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .upsell-cta {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8961F 100%);
+            color: #050A14;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .upsell-cta h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .upsell-cta p {
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .upsell-btn {
+            background-color: #050A14;
+            color: #D4AF37;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upsell-btn:hover {
+            background-color: #0A1525;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                height: 100vh;
+            }
+
+            .chat-header {
+                padding: 15px;
+            }
+
+            .chat-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .ai-status {
+                position: static;
+                transform: none;
+                justify-content: center;
+                margin-top: 10px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .chat-input {
+                padding: 15px;
+            }
+
+            .car-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="chat-header">
+            <h1>🤖 AI Car Advisor</h1>
+            <p>64 years of automotive expertise at your fingertips</p>
+            <div class="ai-status">
+                <div class="status-dot"></div>
+                <span>AI Online</span>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message" id="welcomeMessage">
+                <h2>Welcome to Your AI Car Advisor!</h2>
+                <p>I'll help you find the perfect car based on your needs, budget, and lifestyle. Let's start with a quick conversation.</p>
+                <div class="quick-start-buttons">
+                    <button class="quick-start-btn" onclick="sendQuickMessage('I need help choosing a car for my family')">🚗 Family car recommendations</button>
+                    <button class="quick-start-btn" onclick="sendQuickMessage('What\'s the best car for my daily commute?')">🛣️ Best for commuting</button>
+                    <button class="quick-start-btn" onclick="sendQuickMessage('I want a reliable car under $25,000')">💰 Budget-friendly options</button>
+                    <button class="quick-start-btn" onclick="sendQuickMessage('Tell me about electric vehicles')">⚡ Electric vehicles</button>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="message ai">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h2>🎯 Your Perfect Car Matches</h2>
+                <p>Based on our conversation, here are 3 vehicles tailored to your needs:</p>
+            </div>
+            <div id="recommendationsContainer"></div>
+            
+            <div class="upsell-cta">
+                <h3>Want us to handle everything?</h3>
+                <p>Let our experts find, negotiate, and deliver your perfect car. Skip the dealership entirely.</p>
+                <button class="upsell-btn" onclick="window.open('#', '_blank')">Upgrade to Premium Concierge - $549 →</button>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input">
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="message-input" 
+                    placeholder="Tell me about your car needs..."
+                    rows="1"
+                ></textarea>
+                <button id="sendButton" class="send-button" onclick="sendMessage()">
+                    <span>➤</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationHistory = [];
+        let isProcessing = false;
+
+        // Auto-resize textarea
+        const messageInput = document.getElementById('messageInput');
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Send message on Enter (but allow Shift+Enter for new lines)
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function sendQuickMessage(message) {
+            document.getElementById('welcomeMessage').style.display = 'none';
+            addMessage('user', message);
+            processMessage(message);
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || isProcessing) return;
+
+            // Hide welcome message
+            document.getElementById('welcomeMessage').style.display = 'none';
+            
+            // Add user message
+            addMessage('user', message);
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // Process message
+            processMessage(message);
+        }
+
+        function addMessage(sender, content) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${sender === 'ai' ? 'AI' : 'You'}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'block';
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        async function processMessage(message) {
+            if (isProcessing) return;
+            
+            isProcessing = true;
+            showTyping();
+            
+            // Add to conversation history
+            conversationHistory.push({
+                role: 'user',
+                content: message
+            });
+
+            try {
+                // TODO: Replace with actual API call
+                // const response = await fetch('/api/chat', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ messages: conversationHistory })
+                // });
+                // const data = await response.json();
+
+                // Simulate AI response for demo
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                let aiResponse;
+                if (conversationHistory.length === 1) {
+                    aiResponse = "Great! I'd love to help you find the perfect car. To get started, could you tell me:\n\n• What's your budget range?\n• What will you primarily use the car for? (daily commuting, family trips, etc.)\n• Any specific preferences on size or type?";
+                } else if (conversationHistory.length < 4) {
+                    aiResponse = "Perfect! That helps me understand your needs better. Let me ask a few more questions:\n\n• Do you have a preference for fuel type? (gas, hybrid, electric)\n• What features are most important to you? (safety, technology, comfort, etc.)\n• Any brands you particularly like or want to avoid?";
+                } else {
+                    // Show results after enough conversation
+                    showResults();
+                    return;
+                }
+                
+                hideTyping();
+                addMessage('ai', aiResponse);
+                
+                conversationHistory.push({
+                    role: 'assistant',
+                    content: aiResponse
+                });
+                
+            } catch (error) {
+                hideTyping();
+                addMessage('ai', 'I apologize, but I encountered an error. Please try again or contact support.');
+            }
+            
+            isProcessing = false;
+        }
+
+        function showResults() {
+            hideTyping();
+            
+            // Hide chat interface
+            document.querySelector('.chat-messages').style.display = 'none';
+            document.querySelector('.chat-input').style.display = 'none';
+            
+            // Show results
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Sample recommendations (this would come from the API)
+            const recommendations = [
+                {
+                    title: "2024 Toyota Camry Hybrid LE",
+                    price: "$28,855 - $31,200",
+                    mpg: "51 city / 53 highway",
+                    safety: "5-star NHTSA rating",
+                    reliability: "Excellent (Toyota reliability)",
+                    features: "Toyota Safety Sense 2.0, 8-inch touchscreen",
+                    dealer: "Toyota of Des Moines",
+                    dealerRating: "4.3/5 stars",
+                    why: "Perfect blend of reliability, fuel efficiency, and value. Ideal for daily commuting with excellent resale value."
+                },
+                {
+                    title: "2024 Honda Accord Sport",
+                    price: "$27,295 - $30,500",
+                    mpg: "32 city / 42 highway",
+                    safety: "5-star NHTSA rating",
+                    reliability: "Excellent (Honda reputation)",
+                    features: "Honda Sensing, wireless CarPlay, sport suspension",
+                    dealer: "Carousel Honda",
+                    dealerRating: "4.5/5 stars",
+                    why: "Sporty yet practical with outstanding build quality. Great for those who want driving enjoyment with reliability."
+                },
+                {
+                    title: "2024 Mazda6 Touring",
+                    price: "$26,700 - $29,900",
+                    mpg: "26 city / 35 highway",
+                    safety: "Top Safety Pick+ IIHS",
+                    reliability: "Above Average",
+                    features: "Premium interior, Bose audio, i-ACTIVSENSE safety",
+                    dealer: "Carousel Mazda",
+                    dealerRating: "4.2/5 stars",
+                    why: "Most premium feel in this price range with exceptional interior quality and driving dynamics."
+                }
+            ];
+            
+            const container = document.getElementById('recommendationsContainer');
+            container.innerHTML = recommendations.map(car => `
+                <div class="car-recommendation">
+                    <div class="car-title">${car.title}</div>
+                    <div class="car-price">Starting at ${car.price}</div>
+                    <div class="car-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Fuel Economy</div>
+                            <div class="detail-value">${car.mpg} MPG</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Safety Rating</div>
+                            <div class="detail-value">${car.safety}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Reliability</div>
+                            <div class="detail-value">${car.reliability}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Key Features</div>
+                            <div class="detail-value">${car.features}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Recommended Dealer</div>
+                            <div class="detail-value">${car.dealer}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Dealer Rating</div>
+                            <div class="detail-value">${car.dealerRating}</div>
+                        </div>
+                    </div>
+                    <p style="color: #B0B6C3; font-style: italic; margin-top: 10px;">
+                        <strong>Why this car:</strong> ${car.why}
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-focus on input
+            document.getElementById('messageInput').focus();
+        });
+    </script>
+</body>
+</html>
