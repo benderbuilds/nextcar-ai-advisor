@@ -597,6 +597,34 @@
     </div>
 
     <script>
+        <script>
+        // Add these functions FIRST, before anything else
+        function sendQuickMessage(message) {
+            document.getElementById('welcomeMessage').style.display = 'none';
+            addMessage('user', message);
+            processMessage(message);
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message || isProcessing) return;
+            document.getElementById('welcomeMessage').style.display = 'none';
+            addMessage('user', message);
+            input.value = '';
+            processMessage(message);
+        }
+        
+        function addMessage(sender, content) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `<div class="message-avatar">${sender === 'ai' ? 'AI' : 'You'}</div><div class="message-content">${content}</div>`;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Then rest of your code...
         // Initialize Stripe (update with your actual publishable key)
         const stripe = Stripe('pk_test_51RjN6RCSrwRSSwuqrcimJXZOwVvCxp45XUISpSRc26hnzg9RpN2WncZVj3ntpsUrLyUOF94OdMRyjAwTqMFrvzbG0045mUlr9Q');
 
