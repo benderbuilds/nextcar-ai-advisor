@@ -446,14 +446,6 @@ app.post('/api/submit-concierge', async (req, res) => {
     }
 });
 
-    } catch (error) {
-        console.error('Error submitting concierge form:', error);
-        res.status(500).json({ 
-            error: 'Failed to submit information' 
-        });
-    }
-});
-
 // Update the upsell payment to redirect to concierge form
 app.post('/api/create-upsell-payment', async (req, res) => {
     try {
