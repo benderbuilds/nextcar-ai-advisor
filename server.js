@@ -451,7 +451,7 @@ app.post('/api/chat-enhanced', async (req, res) => {
         }
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4',
+            model: 'gpt-3.5-turbo',
             messages: openaiMessages,
             max_tokens: 800,
             temperature: 0.7
@@ -492,7 +492,7 @@ app.post('/api/chat', async (req, res) => {
         ];
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4',
+            model: 'gpt-3.5-turbo',
             messages: openaiMessages,
             max_tokens: 500,
             temperature: 0.7
@@ -581,7 +581,7 @@ Format as JSON with this structure:
 }`;
 
         const analysisCompletion = await openai.chat.completions.create({
-            model: 'gpt-4',
+            model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: analysisPrompt }],
             max_tokens: 1500,
             temperature: 0.3
@@ -657,7 +657,7 @@ Format as JSON with this structure:
 }`;
 
         const analysisCompletion = await openai.chat.completions.create({
-            model: 'gpt-4',
+            model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: analysisPrompt }],
             max_tokens: 1000,
             temperature: 0.3
