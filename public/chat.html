@@ -623,9 +623,9 @@
             card.className = 'vehicle-card';
             
             card.innerHTML = `
-                <img src="${vehicle.image_url}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" class="vehicle-image" onerror="this.src='https://via.placeholder.com/300x150?text=${vehicle.make}+${vehicle.model}'">
+                <img src="${vehicle.image_url}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" class="vehicle-image" onerror="this.src='https://picsum.photos/300/150?random=${Math.floor(Math.random() * 1000)}'; this.onerror=null;">
                 <div class="vehicle-title">${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}</div>
-                <div class="vehicle-price">$${vehicle.price?.toLocaleString()}</div>
+                <div class="vehicle-price">${vehicle.price?.toLocaleString()}</div>
                 <div class="vehicle-details">
                     <div class="vehicle-detail">
                         <span>Mileage:</span>
@@ -640,7 +640,7 @@
                         <span>${vehicle.dealership} ${vehicle.dealership_rating ? `(${vehicle.dealership_rating.toFixed(1)}★)` : ''}</span>
                     </div>
                     ${vehicle.carfax_available ? '<div class="vehicle-detail"><span>CarFax:</span><span>✓ Available</span></div>' : ''}
-                    ${vehicle.estimated_5yr_cost ? `<div class="vehicle-detail"><span>5-yr cost:</span><span>$${vehicle.estimated_5yr_cost.toLocaleString()}</span></div>` : ''}
+                    ${vehicle.estimated_5yr_cost ? `<div class="vehicle-detail"><span>5-yr cost:</span><span>${vehicle.estimated_5yr_cost.toLocaleString()}</span></div>` : ''}
                 </div>
                 <button class="buy-now-btn" onclick="openServiceModal(${index})">Buy Now</button>
             `;
