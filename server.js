@@ -87,63 +87,67 @@ app.post('/api/chat', async (req, res) => {
         const completion = await openai.chat.completions.create({
             model: 'gpt-4',
             messages: messages,
-            functions: [{
-                name: 'recommend_vehicles_enhanced',
-                description: 'Recommends 3 vehicles with dynamic comparison data based on user needs',
-                parameters: {
-                    type: 'object',
-                    properties: {
-                        comparison_type: {
-                            type: 'string',
-                            enum: ['same_exact_vehicle', 'trim_comparison', 'model_comparison', 'ev_comparison']
-                        },
-                        vehicles: {
-                            type: 'array',
-                            maxItems: 3,
-                            items: {
-                                type: 'object',
-                                properties: {
-                                    make: { type: 'string' },
-                                    model: { type: 'string' },
-                                    year: { type: 'string' },
-                                    trim: { type: 'string' },
-                                    price: { type: 'number' },
-                                    mileage: { type: 'number' },
-                                    location: { type: 'string' },
-                                    dealership: { type: 'string' },
-                                    dealership_rating: { type: 'number' },
-                                    carfax_available: { type: 'boolean' },
-                                    image_url: { type: 'string' },
-                                    listing_url: { type: 'string' },
-                                    estimated_5yr_cost: { type: 'number' },
-                                    reliability_rating: { type: 'number' },
-                                    safety_rating: { type: 'number' },
-                                    // EV specific
-                                    range_epa: { type: 'number' },
-                                    range_real_world: { type: 'number' },
-                                    battery_capacity: { type: 'number' },
-                                    charge_speed_max: { type: 'string' },
-                                    charge_port: { type: 'string' }
+            tools: [{
+                type: 'function',
+                function: {
+                    name: 'recommend_vehicles_enhanced',
+                    description: 'Recommends 3 vehicles with dynamic comparison data based on user needs',
+                    parameters: {
+                        type: 'object',
+                        properties: {
+                            comparison_type: {
+                                type: 'string',
+                                enum: ['same_exact_vehicle', 'trim_comparison', 'model_comparison', 'ev_comparison']
+                            },
+                            vehicles: {
+                                type: 'array',
+                                maxItems: 3,
+                                items: {
+                                    type: 'object',
+                                    properties: {
+                                        make: { type: 'string' },
+                                        model: { type: 'string' },
+                                        year: { type: 'string' },
+                                        trim: { type: 'string' },
+                                        price: { type: 'number' },
+                                        mileage: { type: 'number' },
+                                        location: { type: 'string' },
+                                        dealership: { type: 'string' },
+                                        dealership_rating: { type: 'number' },
+                                        carfax_available: { type: 'boolean' },
+                                        image_url: { type: 'string' },
+                                        listing_url: { type: 'string' },
+                                        estimated_5yr_cost: { type: 'number' },
+                                        reliability_rating: { type: 'number' },
+                                        safety_rating: { type: 'number' },
+                                        // EV specific
+                                        range_epa: { type: 'number' },
+                                        range_real_world: { type: 'number' },
+                                        battery_capacity: { type: 'number' },
+                                        charge_speed_max: { type: 'string' },
+                                        charge_port: { type: 'string' }
+                                    }
                                 }
+                            },
+                            explanation: { type: 'string' },
+                            highlighted_differences: {
+                                type: 'array',
+                                items: { type: 'string' }
                             }
                         },
-                        explanation: { type: 'string' },
-                        highlighted_differences: {
-                            type: 'array',
-                            items: { type: 'string' }
-                        }
-                    },
-                    required: ['comparison_type', 'vehicles']
+                        required: ['comparison_type', 'vehicles']
+                    }
                 }
             }],
-            function_call: 'auto'
+            tool_choice: 'auto'
         });
 
         const response = completion.choices[0].message;
 
-        // If AI used function call, process the vehicle recommendations
-        if (response.function_call) {
-            const functionResult = JSON.parse(response.function_call.arguments);
+        // If AI used tool call, process the vehicle recommendations
+        if (response.tool_calls && response.tool_calls.length > 0) {
+            const toolCall = response.tool_calls[0];
+            const functionResult = JSON.parse(toolCall.function.arguments);
             
             // Enhance with real car search (placeholder for now)
             const enhancedVehicles = await enhanceVehicleData(functionResult.vehicles);
