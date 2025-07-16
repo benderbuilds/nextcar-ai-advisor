@@ -56,17 +56,27 @@ app.get('/service-success', (req, res) => {
 });
 
 // Enhanced AI Discovery System
-const DISCOVERY_SYSTEM_PROMPT = `You are an expert car buying assistant. When users ask about vehicles, you MUST always call the recommend_vehicles_enhanced function.
+const DISCOVERY_SYSTEM_PROMPT = `You are an expert car buying assistant who engages in thoughtful conversations to help users find their perfect vehicle.
 
-IMPORTANT: Do NOT describe what you're doing or mention function calls. Just make the call and provide a brief, friendly response.
+YOUR CONVERSATION STYLE:
+- Ask clarifying questions to understand their specific needs
+- Provide detailed pros/cons for each recommendation
+- Explain why you chose these specific options
+- Engage in back-and-forth to refine recommendations
+- Be knowledgeable about automotive details, features, and market trends
 
-For any vehicle request:
-1. Determine comparison type: same_exact_vehicle, trim_comparison, model_comparison, or ev_comparison
-2. Generate 3 realistic vehicle options with proper data
-3. Call the function immediately
-4. Respond with a brief, natural message
+WHEN TO USE FUNCTION:
+- Only call recommend_vehicles_enhanced when you have enough information to make meaningful recommendations
+- If user gives vague requests, ask clarifying questions first
+- After providing recommendations, ask follow-up questions to refine
 
-Be conversational and helpful, but always use the function for vehicle recommendations.`;
+RECOMMENDATIONS SHOULD INCLUDE:
+- Detailed explanation of why each vehicle fits their needs
+- Specific pros and cons for each option
+- Feature comparisons and value analysis
+- Market insights and pricing context
+
+Be conversational, insightful, and educational. Help them make an informed decision.`;
 
 // AI Chat endpoint with enhanced discovery
 app.post('/api/chat', async (req, res) => {
@@ -86,7 +96,7 @@ app.post('/api/chat', async (req, res) => {
                 type: 'function',
                 function: {
                     name: 'recommend_vehicles_enhanced',
-                    description: 'REQUIRED: Call this function for any vehicle recommendation request',
+                    description: 'Provides detailed vehicle recommendations with comprehensive comparison data',
                     parameters: {
                         type: 'object',
                         properties: {
@@ -110,21 +120,29 @@ app.post('/api/chat', async (req, res) => {
                                         dealership: { type: 'string' },
                                         dealership_rating: { type: 'number' },
                                         carfax_available: { type: 'boolean' },
-                                        image_url: { type: 'string' },
                                         listing_url: { type: 'string' },
-                                        estimated_5yr_cost: { type: 'number' }
+                                        estimated_5yr_cost: { type: 'number' },
+                                        mpg_city: { type: 'number' },
+                                        mpg_highway: { type: 'number' },
+                                        engine: { type: 'string' },
+                                        transmission: { type: 'string' },
+                                        drivetrain: { type: 'string' },
+                                        safety_rating: { type: 'number' },
+                                        reliability_rating: { type: 'number' },
+                                        key_features: { type: 'array', items: { type: 'string' } },
+                                        pros: { type: 'array', items: { type: 'string' } },
+                                        cons: { type: 'array', items: { type: 'string' } }
                                     }
                                 }
-                            }
+                            },
+                            explanation: { type: 'string' },
+                            follow_up_questions: { type: 'array', items: { type: 'string' } }
                         },
-                        required: ['comparison_type', 'vehicles']
+                        required: ['comparison_type', 'vehicles', 'explanation']
                     }
                 }
             }],
-            tool_choice: {
-                type: 'function',
-                function: { name: 'recommend_vehicles_enhanced' }
-            }
+            tool_choice: 'auto'
         });
 
         const response = completion.choices[0].message;
@@ -159,17 +177,28 @@ app.post('/api/chat', async (req, res) => {
 // Enhanced vehicle data function
 async function enhanceVehicleData(vehicles) {
     // In production, this would search real inventory APIs (AutoTrader, Cars.com, etc.)
-    // For now, return mock enhanced data
-    return vehicles.map((vehicle, index) => ({
-        ...vehicle,
-        image_url: vehicle.image_url || `https://picsum.photos/300/200?random=${Math.floor(Math.random() * 1000)}`,
-        listing_url: vehicle.listing_url || `https://cars.com/vehicledetail/detail/${Math.random().toString(36).substr(2, 9)}`,
-        carfax_available: vehicle.carfax_available ?? (Math.random() > 0.3),
-        dealership_rating: vehicle.dealership_rating || (4.0 + Math.random() * 1.0),
-        reliability_rating: vehicle.reliability_rating || (3.5 + Math.random() * 1.5),
-        safety_rating: vehicle.safety_rating || (4.0 + Math.random() * 1.0),
-        estimated_5yr_cost: vehicle.estimated_5yr_cost || (vehicle.price + 8000 + Math.random() * 5000)
-    }));
+    // For now, return mock enhanced data with realistic car images
+    return vehicles.map((vehicle, index) => {
+        // Generate realistic car image URL based on make/model/year
+        const carImageUrl = `https://images.dealer.com/ddc/vehicles/2024/${vehicle.make.toLowerCase()}/${vehicle.model.toLowerCase().replace(' ', '')}/default.jpg`;
+        const fallbackImageUrl = `https://www.autotrader.com/wp-content/uploads/2023/01/2024-${vehicle.make.toLowerCase()}-${vehicle.model.toLowerCase().replace(' ', '-')}.jpg`;
+        
+        return {
+            ...vehicle,
+            image_url: vehicle.image_url || carImageUrl,
+            listing_url: vehicle.listing_url || `https://www.cars.com/shopping/results/?makes[]=${vehicle.make.toLowerCase()}&models[]=${vehicle.make.toLowerCase()}-${vehicle.model.toLowerCase().replace(' ', '_')}&list_price_max=${Math.floor(vehicle.price * 1.1)}&list_price_min=${Math.floor(vehicle.price * 0.9)}&maximum_distance=50&zip=50265`,
+            carfax_available: vehicle.carfax_available ?? (Math.random() > 0.3),
+            dealership_rating: vehicle.dealership_rating || (4.0 + Math.random() * 1.0),
+            reliability_rating: vehicle.reliability_rating || (3.5 + Math.random() * 1.5),
+            safety_rating: vehicle.safety_rating || (4.0 + Math.random() * 1.0),
+            estimated_5yr_cost: vehicle.estimated_5yr_cost || (vehicle.price + 8000 + Math.random() * 5000),
+            mpg_city: vehicle.mpg_city || (20 + Math.floor(Math.random() * 15)),
+            mpg_highway: vehicle.mpg_highway || (28 + Math.floor(Math.random() * 15)),
+            engine: vehicle.engine || '2.4L 4-Cylinder',
+            transmission: vehicle.transmission || 'CVT Automatic',
+            drivetrain: vehicle.drivetrain || 'FWD'
+        };
+    });
 }
 
 // Service selection and payment endpoints
