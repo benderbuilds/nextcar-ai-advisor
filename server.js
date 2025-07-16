@@ -69,7 +69,9 @@ Always respond with exactly 3 vehicle recommendations. Be personable and mirror 
 
 For explanations, keep them under 30 words when helpful. Focus on being analytical yet friendly.
 
-You MUST call the recommend_vehicles_enhanced function with your recommendations.`;
+When you have vehicle recommendations, you MUST call the recommend_vehicles_enhanced function. Do NOT describe or explain the function call - just make the call and provide a brief, friendly message about finding options for them.
+
+NEVER show function call syntax, code, or technical details to the user.`;
 
 // AI Chat endpoint with enhanced discovery
 app.post('/api/chat', async (req, res) => {
@@ -147,7 +149,7 @@ app.post('/api/chat', async (req, res) => {
             const enhancedVehicles = await enhanceVehicleData(functionResult.vehicles);
             
             res.json({
-                message: response.content || `I found ${enhancedVehicles.length} great options for you!`,
+                message: `I found ${enhancedVehicles.length} great options for you! Here are your recommendations:`,
                 function_call: {
                     name: 'recommend_vehicles_enhanced',
                     arguments: JSON.stringify({
