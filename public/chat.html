@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextCar AI - Intelligent Car Buying Assistant</title>
+    <title>NextCar AI - Intelligent Discovery</title>
     <script src="https://js.stripe.com/v3/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Scandinavian Warehouse Aesthetic */
+        /* Simple Dark Mode with Blue Accent */
         :root {
-            --primary-bg: #f8f9fa;
-            --secondary-bg: #ffffff;
-            --accent-bg: #e9ecef;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --text-accent: #495057;
-            --border-color: #dee2e6;
-            --shadow-light: 0 2px 4px rgba(0,0,0,0.06);
-            --shadow-medium: 0 4px 12px rgba(0,0,0,0.1);
-            --shadow-heavy: 0 8px 25px rgba(0,0,0,0.15);
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2a2a2a;
+            --accent-bg: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8b8;
+            --text-muted: #8a8a8a;
+            --border-color: #404040;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-medium: 0 4px 16px rgba(0,0,0,0.2);
             --border-radius: 8px;
             --border-radius-large: 12px;
-            --accent-color: #6f42c1;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
+            --accent-color: #86C7E4;
+            --accent-dark: #6BB6DB;
+            --success-color: #10b981;
         }
 
         * {
@@ -35,7 +35,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--primary-bg);
             color: var(--text-primary);
-            line-height: 1.5;
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
@@ -80,6 +80,19 @@
             background: var(--primary-bg);
         }
 
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: var(--accent-bg);
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
         .welcome-message {
             text-align: center;
             padding: 40px 20px;
@@ -87,6 +100,7 @@
             border-radius: var(--border-radius-large);
             margin-bottom: 24px;
             box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
         }
 
         .welcome-message h3 {
@@ -110,7 +124,7 @@
         }
 
         .quick-btn {
-            background: var(--secondary-bg);
+            background: var(--accent-bg);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             padding: 16px 20px;
@@ -123,10 +137,10 @@
         }
 
         .quick-btn:hover {
-            background: var(--accent-bg);
-            border-color: var(--text-secondary);
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border-color: var(--accent-color);
             transform: translateY(-1px);
-            box-shadow: var(--shadow-light);
         }
 
         /* Message Styles */
@@ -155,12 +169,12 @@
 
         .message.ai .message-avatar {
             background: var(--accent-color);
-            color: white;
+            color: var(--primary-bg);
         }
 
         .message.user .message-avatar {
-            background: var(--text-secondary);
-            color: white;
+            background: var(--accent-bg);
+            color: var(--text-primary);
         }
 
         .message-content {
@@ -174,7 +188,11 @@
 
         .message.user .message-content {
             background: var(--accent-color);
-            color: white;
+            color: var(--primary-bg);
+            border-color: var(--accent-color);
+        }
+
+        .message.ai .message-content {
             border-color: var(--accent-color);
         }
 
@@ -194,7 +212,7 @@
         }
 
         .comparison-header h3 {
-            color: var(--text-primary);
+            color: var(--accent-color);
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 8px;
@@ -224,8 +242,8 @@
 
         .vehicle-card:hover {
             transform: translateY(-4px);
-            box-shadow: var(--shadow-heavy);
-            border-color: var(--text-secondary);
+            box-shadow: var(--shadow-medium);
+            border-color: var(--accent-color);
         }
 
         .badge {
@@ -233,16 +251,12 @@
             top: 12px;
             right: 12px;
             background: var(--accent-color);
-            color: white;
+            color: var(--primary-bg);
             padding: 4px 10px;
-            border-radius: 20px;
+            border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 600;
         }
-
-        .badge.best-value { background: var(--success-color); }
-        .badge.most-reliable { background: var(--accent-color); }
-        .badge.staff-pick { background: var(--warning-color); color: var(--text-primary); }
 
         .vehicle-image {
             margin-bottom: 16px;
@@ -269,7 +283,7 @@
         }
 
         .trim {
-            color: var(--text-secondary);
+            color: var(--accent-color);
             font-size: 0.85rem;
             margin-bottom: 8px;
         }
@@ -316,14 +330,14 @@
         }
 
         .location {
-            color: var(--text-secondary);
+            color: var(--text-muted);
             font-size: 0.8rem;
             margin-bottom: 12px;
         }
 
         .buy-now-btn {
             background: var(--accent-color);
-            color: white;
+            color: var(--primary-bg);
             border: none;
             padding: 12px 24px;
             border-radius: var(--border-radius);
@@ -335,9 +349,8 @@
         }
 
         .buy-now-btn:hover {
-            background: #5a32a3;
+            background: var(--accent-dark);
             transform: translateY(-1px);
-            box-shadow: var(--shadow-light);
         }
 
         .refinement-options {
@@ -359,8 +372,9 @@
         }
 
         .refine-btn:hover, .question-btn:hover {
-            background: var(--accent-bg);
-            border-color: var(--text-secondary);
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            border-color: var(--accent-color);
         }
 
         /* Input Area */
@@ -393,16 +407,15 @@
         .message-input:focus {
             outline: none;
             border-color: var(--accent-color);
-            background: var(--secondary-bg);
         }
 
         .message-input::placeholder {
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
 
         .send-btn {
             background: var(--accent-color);
-            color: white;
+            color: var(--primary-bg);
             border: none;
             border-radius: var(--border-radius);
             padding: 12px 20px;
@@ -413,12 +426,12 @@
         }
 
         .send-btn:hover:not(:disabled) {
-            background: #5a32a3;
+            background: var(--accent-dark);
             transform: translateY(-1px);
         }
 
         .send-btn:disabled {
-            background: var(--text-secondary);
+            background: var(--text-muted);
             cursor: not-allowed;
         }
 
@@ -429,12 +442,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(4px);
         }
 
         .service-content {
@@ -443,7 +455,7 @@
             border-radius: var(--border-radius-large);
             max-width: 500px;
             width: 90%;
-            box-shadow: var(--shadow-heavy);
+            box-shadow: var(--shadow-medium);
             border: 1px solid var(--border-color);
         }
 
@@ -479,14 +491,11 @@
 
         .service-option:hover {
             border-color: var(--accent-color);
-            background: var(--secondary-bg);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
         }
 
         .service-option.popular {
             border-color: var(--accent-color);
-            background: var(--secondary-bg);
         }
 
         .service-header {
@@ -519,7 +528,7 @@
             top: -8px;
             right: 16px;
             background: var(--accent-color);
-            color: white;
+            color: var(--primary-bg);
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 0.75rem;
@@ -546,8 +555,8 @@
         }
 
         .close-btn:hover {
-            background: var(--accent-bg);
-            border-color: var(--text-secondary);
+            border-color: var(--accent-color);
+            color: var(--text-primary);
         }
 
         /* Typing indicator */
@@ -566,7 +575,7 @@
         .typing-dot {
             width: 8px;
             height: 8px;
-            background: var(--text-secondary);
+            background: var(--accent-color);
             border-radius: 50%;
             animation: typing 1.4s infinite ease-in-out;
         }
@@ -662,23 +671,23 @@
         <!-- Header -->
         <div class="chat-header">
             <h1 class="chat-title">NextCar AI</h1>
-            <p class="chat-subtitle">Intelligent Car Buying Assistant</p>
+            <p class="chat-subtitle">Intelligent Car Discovery Assistant</p>
         </div>
 
         <!-- Messages Container -->
         <div class="messages-container" id="chatMessages">
             <div class="welcome-message" id="welcomeMessage">
                 <h3>👋 Welcome to NextCar AI</h3>
-                <p>I'm here to help you find the perfect car. Whether you know exactly what you want or need guidance, I'll find your ideal match.</p>
+                <p>I'm here to help you find the perfect car. Whether you know exactly what you want or need guidance, I'll find your ideal match in just a few minutes.</p>
                 
                 <div class="quick-options">
-                    <button class="quick-btn" onclick="sendQuickMessage('I need help choosing a car for my family')">
+                    <button class="quick-btn" onclick="sendQuickMessage('I need help choosing a car for my family in Des Moines')">
                         Family car recommendations
                     </button>
                     <button class="quick-btn" onclick="sendQuickMessage('I want a reliable commuter car under $25k')">
                         Reliable commuter under $25k
                     </button>
-                    <button class="quick-btn" onclick="sendQuickMessage('Show me electric vehicles in my area')">
+                    <button class="quick-btn" onclick="sendQuickMessage('Show me electric vehicles in Iowa')">
                         Electric vehicle options
                     </button>
                     <button class="quick-btn" onclick="sendQuickMessage('I know what I want, help me find the best deal')">
@@ -878,19 +887,19 @@
         }
 
         function generateVehicleCard(vehicle, comparison_type, index) {
-            const badge = vehicle.badge ? `<span class="badge ${vehicle.badge.toLowerCase().replace(' ', '-')}">${vehicle.badge}</span>` : '';
+            const badge = vehicle.badge ? `<span class="badge">${vehicle.badge}</span>` : '';
             
             return `
                 <div class="vehicle-card" data-index="${index}">
                     ${badge}
                     <div class="vehicle-image">
-                        <img src="${vehicle.image_url || 'https://via.placeholder.com/300x140/e9ecef/6c757d?text=Vehicle'}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" />
+                        <img src="${vehicle.image_url || 'https://via.placeholder.com/300x140/333333/86C7E4?text=Vehicle'}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" />
                     </div>
                     
                     <div class="vehicle-header">
                         <h4>${vehicle.year} ${vehicle.make} ${vehicle.model}</h4>
                         <p class="trim">${vehicle.trim}</p>
-                        <p class="price">${vehicle.price.toLocaleString()}</p>
+                        <p class="price">$${vehicle.price.toLocaleString()}</p>
                     </div>
                     
                     <div class="vehicle-details">
@@ -912,30 +921,6 @@
                         <div class="detail-row">
                             <span class="label">Mileage:</span>
                             <span class="value">${vehicle.mileage?.toLocaleString() || 'N/A'} mi</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">5-Year Cost:</span>
-                            <span class="value">${vehicle.estimated_5yr_cost?.toLocaleString() || 'N/A'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">CarFax:</span>
-                            <span class="value">${vehicle.carfax_available ? '✓ Available' : '✗ N/A'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">Dealer Rating:</span>
-                            <span class="value">${'⭐'.repeat(Math.floor(vehicle.dealership_rating || 0))} ${vehicle.dealership_rating || 'N/A'}</span>
-                        </div>
-                    `;
-                    
-                case 'trim_comparison':
-                    return `
-                        <div class="detail-row">
-                            <span class="label">Mileage:</span>
-                            <span class="value">${vehicle.mileage?.toLocaleString() || 'N/A'} mi</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">Key Features:</span>
-                            <span class="value">${vehicle.key_features?.slice(0,2).join(', ') || 'Standard'}</span>
                         </div>
                         <div class="detail-row">
                             <span class="label">5-Year Cost:</span>
@@ -1114,3 +1099,27 @@
     </script>
 </body>
 </html>
+                            <span class="value">$${vehicle.estimated_5yr_cost?.toLocaleString() || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">CarFax:</span>
+                            <span class="value">${vehicle.carfax_available ? '✓ Available' : '✗ N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Dealer Rating:</span>
+                            <span class="value">${'⭐'.repeat(Math.floor(vehicle.dealership_rating || 0))} ${vehicle.dealership_rating || 'N/A'}</span>
+                        </div>
+                    `;
+                    
+                case 'trim_comparison':
+                    return `
+                        <div class="detail-row">
+                            <span class="label">Mileage:</span>
+                            <span class="value">${vehicle.mileage?.toLocaleString() || 'N/A'} mi</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Key Features:</span>
+                            <span class="value">${vehicle.key_features?.slice(0,2).join(', ') || 'Standard'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">5-Year Cost:</span>
