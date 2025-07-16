@@ -162,7 +162,7 @@ async function enhanceVehicleData(vehicles) {
     // For now, return mock enhanced data
     return vehicles.map((vehicle, index) => ({
         ...vehicle,
-        image_url: vehicle.image_url || `https://via.placeholder.com/300x200?text=${vehicle.make}+${vehicle.model}`,
+        image_url: vehicle.image_url || `https://picsum.photos/300/200?random=${Math.floor(Math.random() * 1000)}`,
         listing_url: vehicle.listing_url || `https://cars.com/vehicledetail/detail/${Math.random().toString(36).substr(2, 9)}`,
         carfax_available: vehicle.carfax_available ?? (Math.random() > 0.3),
         dealership_rating: vehicle.dealership_rating || (4.0 + Math.random() * 1.0),
