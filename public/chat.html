@@ -3,307 +3,1114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Car Advisor - NextCar Concierge</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>NextCar AI - Intelligent Car Buying Assistant</title>
     <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        /* Scandinavian Warehouse Aesthetic */
+        :root {
+            --primary-bg: #f8f9fa;
+            --secondary-bg: #ffffff;
+            --accent-bg: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-accent: #495057;
+            --border-color: #dee2e6;
+            --shadow-light: 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-medium: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-heavy: 0 8px 25px rgba(0,0,0,0.15);
+            --border-radius: 8px;
+            --border-radius-large: 12px;
+            --accent-color: #6f42c1;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .chat-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--secondary-bg);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Header */
+        .chat-header {
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .chat-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .chat-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* Messages Area */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: var(--primary-bg);
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-large);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-light);
+        }
+
+        .welcome-message h3 {
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .welcome-message p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 1rem;
+        }
+
+        .quick-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .quick-btn {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 16px 20px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .quick-btn:hover {
+            background: var(--accent-bg);
+            border-color: var(--text-secondary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Message Styles */
+        .message {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.ai .message-avatar {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        .message-content {
+            background: var(--secondary-bg);
+            padding: 16px 20px;
+            border-radius: var(--border-radius-large);
+            max-width: 70%;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .message.user .message-content {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        /* Comparison Table Styles */
+        .comparison-container {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius-large);
+            padding: 24px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .comparison-header h3 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .explanation {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .vehicle-card {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-large);
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .vehicle-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-heavy);
+            border-color: var(--text-secondary);
+        }
+
+        .badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.best-value { background: var(--success-color); }
+        .badge.most-reliable { background: var(--accent-color); }
+        .badge.staff-pick { background: var(--warning-color); color: var(--text-primary); }
+
+        .vehicle-image {
+            margin-bottom: 16px;
+        }
+
+        .vehicle-image img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            background: var(--accent-bg);
+        }
+
+        .vehicle-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .vehicle-header h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .trim {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .price {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .vehicle-details {
+            margin-bottom: 16px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .value {
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .vehicle-footer {
+            text-align: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .location {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+        }
+
+        .buy-now-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .buy-now-btn:hover {
+            background: #5a32a3;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .refinement-options {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .refine-btn, .question-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .refine-btn:hover, .question-btn:hover {
+            background: var(--accent-bg);
+            border-color: var(--text-secondary);
+        }
+
+        /* Input Area */
+        .input-container {
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 20px 24px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: var(--secondary-bg);
+        }
+
+        .message-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .send-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: #5a32a3;
+            transform: translateY(-1px);
+        }
+
+        .send-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        /* Service Selection Modal */
+        .service-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .service-content {
+            background: var(--secondary-bg);
+            padding: 32px;
+            border-radius: var(--border-radius-large);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--border-color);
+        }
+
+        .service-content h3 {
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .selected-price {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 1rem;
+        }
+
+        .service-options {
+            margin: 24px 0;
+        }
+
+        .service-option {
+            background: var(--primary-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-large);
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .service-option:hover {
+            border-color: var(--accent-color);
+            background: var(--secondary-bg);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .service-option.popular {
+            border-color: var(--accent-color);
+            background: var(--secondary-bg);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .service-icon {
+            font-size: 1.5rem;
+        }
+
+        .service-header h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .service-price {
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -8px;
+            right: 16px;
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .service-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            width: 100%;
+            margin-top: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--accent-bg);
+            border-color: var(--text-secondary);
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+            }
+
+            .chat-header {
+                padding: 16px 20px;
+            }
+
+            .chat-title {
+                font-size: 1.5rem;
+            }
+
+            .messages-container {
+                padding: 16px;
+            }
+
+            .vehicle-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .quick-options {
+                grid-template-columns: 1fr;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .service-content {
+                padding: 24px;
+                margin: 20px;
+            }
+
+            .refinement-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .refine-btn, .question-btn {
+                width: 200px;
+            }
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .btn-loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body style="font-family: 'Inter', sans-serif; background-color: #050A14; color: #ffffff; margin: 0; padding: 20px;">
+<body>
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <h1 class="chat-title">NextCar AI</h1>
+            <p class="chat-subtitle">Intelligent Car Buying Assistant</p>
+        </div>
 
-<div style="max-width: 800px; margin: 0 auto; background-color: #0A1525; border-radius: 12px; padding: 20px;">
-    <!-- Header -->
-    <div style="background: linear-gradient(135deg, #D4AF37 0%, #B8961F 100%); color: #050A14; padding: 20px; text-align: center; border-radius: 12px; margin-bottom: 20px;">
-        <h1>🤖 AI Car Advisor</h1>
-        <p>64 years of automotive expertise at your fingertips</p>
-    </div>
+        <!-- Messages Container -->
+        <div class="messages-container" id="chatMessages">
+            <div class="welcome-message" id="welcomeMessage">
+                <h3>👋 Welcome to NextCar AI</h3>
+                <p>I'm here to help you find the perfect car. Whether you know exactly what you want or need guidance, I'll find your ideal match.</p>
+                
+                <div class="quick-options">
+                    <button class="quick-btn" onclick="sendQuickMessage('I need help choosing a car for my family')">
+                        Family car recommendations
+                    </button>
+                    <button class="quick-btn" onclick="sendQuickMessage('I want a reliable commuter car under $25k')">
+                        Reliable commuter under $25k
+                    </button>
+                    <button class="quick-btn" onclick="sendQuickMessage('Show me electric vehicles in my area')">
+                        Electric vehicle options
+                    </button>
+                    <button class="quick-btn" onclick="sendQuickMessage('I know what I want, help me find the best deal')">
+                        I know what I want
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    <!-- Welcome Message -->
-    <div id="welcomeMessage" style="text-align: center; padding: 40px 20px; color: #B0B6C3;">
-        <h2 style="color: #D4AF37; margin-bottom: 10px;">Welcome to Your AI Car Advisor!</h2>
-        <p style="margin-bottom: 20px;">I'll help you find the perfect car based on your needs, budget, and lifestyle.</p>
-        
-        <div style="display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto;">
-            <button onclick="startChat('I need help choosing a car for my family in Des Moines')" style="background-color: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; padding: 10px 16px; border-radius: 12px; cursor: pointer;">
-                🚗 Family car recommendations
-            </button>
-            <button onclick="startChat('What is the best car for my daily commute in Iowa?')" style="background-color: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; padding: 10px 16px; border-radius: 12px; cursor: pointer;">
-                🛣️ Best for commuting  
-            </button>
-            <button onclick="startChat('I want a reliable car under $25,000 in my area')" style="background-color: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); color: #D4AF37; padding: 10px 16px; border-radius: 12px; cursor: pointer;">
-                💰 Budget-friendly options
-            </button>
+        <!-- Input Container -->
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea 
+                    id="messageInput" 
+                    class="message-input" 
+                    placeholder="What kind of car are you looking for?"
+                    rows="1"
+                ></textarea>
+                <button id="sendBtn" class="send-btn" onclick="sendMessage()">Send</button>
+            </div>
         </div>
     </div>
 
-    <!-- Chat Messages -->
-    <div id="chatMessages" style="min-height: 300px; max-height: 500px; overflow-y: auto; padding: 20px; background-color: #050A14; border-radius: 12px; margin-bottom: 20px;">
-        <!-- Messages will appear here -->
-    </div>
+    <script>
+        // Global variables
+        let conversationHistory = [];
+        let isProcessing = false;
+        let currentComparison = null;
+        const stripe = Stripe('pk_test_51RjN6RCSrwRSSwuqrcimJXZOwVvCxp45XUISpSRc26hnzg9RpN2WncZVj3ntpsUrLyUOF94OdMRyjAwTqMFrvzbG0045mUlr9Q');
 
-    <!-- Typing Indicator -->
-    <div id="typingIndicator" style="display: none; padding: 10px 20px; background-color: rgba(212, 175, 55, 0.1); border-radius: 12px; margin-bottom: 20px;">
-        <span style="color: #D4AF37;">AI is typing...</span>
-    </div>
-
-    <!-- Chat Input -->
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <input type="text" id="messageInput" placeholder="Tell me about your car needs..." style="flex: 1; padding: 12px 16px; background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; color: #ffffff; font-size: 1rem;">
-        <button onclick="sendUserMessage()" style="background-color: #D4AF37; color: #050A14; border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; font-size: 1.2rem;">
-            ➤
-        </button>
-    </div>
-
-    <!-- Results Section -->
-    <div id="resultsSection" style="display: none; margin-top: 30px; padding: 20px; background-color: #050A14; border-radius: 12px;">
-        <h2 style="color: #D4AF37; text-align: center; margin-bottom: 20px;">🎯 Your Perfect Car Matches</h2>
-        <div id="recommendationsContainer"></div>
-        
-        <div style="background: linear-gradient(135deg, #D4AF37 0%, #B8961F 100%); color: #050A14; padding: 20px; border-radius: 12px; text-align: center; margin-top: 30px;">
-            <h3>Want us to handle everything?</h3>
-            <p>Let our experts find, negotiate, and deliver your perfect car. Skip the dealership entirely.</p>
-            <button onclick="upgradeToFullService()" style="background-color: #050A14; color: #D4AF37; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                Upgrade to Premium Concierge - $549 →
-            </button>
-        </div>
-    </div>
-</div>
-
-<script>
-// Initialize Stripe
-const stripe = Stripe('pk_test_51RjN6RCSrwRSSwuqrcimJXZOwVvCxp45XUISpSRc26hnzg9RpN2WncZVj3ntpsUrLyUOF94OdMRyjAwTqMFrvzbG0045mUlr9Q');
-
-// Global variables
-let conversationHistory = [];
-let isProcessing = false;
-let searchResults = [];
-
-// Core functions - defined at the top
-function startChat(message) {
-    document.getElementById('welcomeMessage').style.display = 'none';
-    showMessage('user', message);
-    processAIMessage(message);
-}
-
-function sendUserMessage() {
-    const input = document.getElementById('messageInput');
-    const message = input.value.trim();
-    
-    if (!message || isProcessing) return;
-    
-    document.getElementById('welcomeMessage').style.display = 'none';
-    showMessage('user', message);
-    input.value = '';
-    processAIMessage(message);
-}
-
-function showMessage(sender, content) {
-    const messagesContainer = document.getElementById('chatMessages');
-    const messageDiv = document.createElement('div');
-    
-    const isUser = sender === 'user';
-    const avatarText = isUser ? 'You' : 'AI';
-    const bgColor = isUser ? 'rgba(79, 70, 229, 0.2)' : 'rgba(212, 175, 55, 0.1)';
-    
-    messageDiv.innerHTML = `
-        <div style="display: flex; gap: 12px; margin-bottom: 20px; ${isUser ? 'flex-direction: row-reverse;' : ''}">
-            <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; background-color: ${isUser ? '#4f46e5' : '#D4AF37'}; color: ${isUser ? 'white' : '#050A14'}; flex-shrink: 0;">
-                ${avatarText}
-            </div>
-            <div style="background-color: ${bgColor}; padding: 12px 16px; border-radius: 18px; max-width: 70%; line-height: 1.5;">
-                ${content}
-            </div>
-        </div>
-    `;
-    
-    messagesContainer.appendChild(messageDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-function showTyping() {
-    document.getElementById('typingIndicator').style.display = 'block';
-}
-
-function hideTyping() {
-    document.getElementById('typingIndicator').style.display = 'none';
-}
-
-async function processAIMessage(message) {
-    if (isProcessing) return;
-    
-    isProcessing = true;
-    showTyping();
-    
-    conversationHistory.push({
-        role: 'user',
-        content: message
-    });
-
-    try {
-        const response = await fetch('/api/chat-enhanced', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                messages: conversationHistory,
-                chatToken: localStorage.getItem('chatToken')
-            })
-        });
-        
-        const data = await response.json();
-        
-        hideTyping();
-        showMessage('ai', data.message);
-        
-        if (data.searchResults && data.searchResults.length > 0) {
-            searchResults = data.searchResults;
-            console.log('Search results received:', searchResults.length, 'listings');
-        }
-        
-        conversationHistory.push({
-            role: 'assistant',
-            content: data.message
-        });
-        
-        if (data.readyForRecommendations) {
-            setTimeout(showResults, 1000);
-        }
-        
-    } catch (error) {
-        hideTyping();
-        showMessage('ai', 'I apologize, but I encountered an error. Please try again or contact support.');
-        console.error('Chat error:', error);
-    }
-    
-    isProcessing = false;
-}
-
-async function showResults() {
-    try {
-        const response = await fetch('/api/recommendations-enhanced', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                messages: conversationHistory,
-                chatToken: localStorage.getItem('chatToken'),
-                searchResults: searchResults
-            })
-        });
-        
-        const data = await response.json();
-        displayResults(data.recommendations, data.searchPerformed);
-        
-    } catch (error) {
-        console.error('Error getting recommendations:', error);
-    }
-}
-
-function displayResults(recommendations, searchPerformed) {
-    document.getElementById('resultsSection').style.display = 'block';
-    
-    const container = document.getElementById('recommendationsContainer');
-    
-    const recommendationsHTML = recommendations.map(car => `
-        <div style="background-color: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #D4AF37;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <h3 style="color: #ffffff; margin: 0;">${car.title}</h3>
-                <span style="color: #D4AF37; font-size: 0.9rem;">${car.source || 'Expert Database'}</span>
-            </div>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('messageInput');
             
-            <div style="color: #D4AF37; font-size: 1.1rem; font-weight: 600; margin-bottom: 15px;">
-                ${car.estimatedPrice || car.marketPrice || 'Contact for pricing'}
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <strong style="color: #D4AF37;">Why this car:</strong>
-                <p style="margin: 5px 0; color: #B0B6C3;">${car.whyPerfectMatch || car.whyRecommended || 'Perfect match for your needs'}</p>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-                ${car.url && car.url !== '#' ? 
-                    `<a href="${car.url}" target="_blank" style="background-color: #D4AF37; color: #050A14; padding: 10px 15px; text-decoration: none; border-radius: 8px; text-align: center; font-weight: 600;">View Listing →</a>` :
-                    `<button onclick="searchCar('${car.title}')" style="background-color: #D4AF37; color: #050A14; padding: 10px 15px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Search for This Car →</button>`
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Send on Enter (but not Shift+Enter)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
                 }
-                <button onclick="contactDealer('${car.title}')" style="background-color: transparent; color: #D4AF37; padding: 10px 15px; border: 2px solid #D4AF37; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                    Contact Dealer
-                </button>
-            </div>
-        </div>
-    `).join('');
-    
-    container.innerHTML = recommendationsHTML;
-    
-    // Scroll to results
-    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
-}
-
-function searchCar(carTitle) {
-    const searchQuery = encodeURIComponent(carTitle + ' Iowa for sale');
-    window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
-}
-
-function contactDealer(carTitle) {
-    const message = `I'm interested in the ${carTitle} recommended by your AI Car Advisor. Please provide more details.`;
-    window.location.href = `mailto:nextcarconcierge@gmail.com?subject=Interest in ${encodeURIComponent(carTitle)}&body=${encodeURIComponent(message)}`;
-}
-
-async function upgradeToFullService() {
-    try {
-        const response = await fetch('/api/create-upsell-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ service: 'premium_concierge' })
+            });
         });
-        
-        const { sessionId } = await response.json();
-        
-        const { error } = await stripe.redirectToCheckout({ sessionId: sessionId });
-        
-        if (error) {
-            alert('Payment failed. Please try again.');
+
+        function sendQuickMessage(message) {
+            document.getElementById('welcomeMessage').style.display = 'none';
+            addMessage('user', message);
+            processMessage(message);
         }
-        
-    } catch (error) {
-        alert('Payment failed. Please try again.');
-    }
-}
 
-// Handle payment verification on page load
-window.addEventListener('load', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session_id');
-    
-    if (sessionId) {
-        verifyPayment(sessionId);
-    }
-    
-    // Focus on input
-    document.getElementById('messageInput').focus();
-});
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || isProcessing) return;
+            
+            document.getElementById('welcomeMessage').style.display = 'none';
+            addMessage('user', message);
+            input.value = '';
+            input.style.height = 'auto';
+            processMessage(message);
+        }
 
-async function verifyPayment(sessionId) {
-    try {
-        const response = await fetch('/api/verify-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId })
+        function addMessage(sender, content, isHtml = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatarText = sender === 'ai' ? 'AI' : 'You';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatarText}</div>
+                <div class="message-content">${isHtml ? content : content}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar">AI</div>
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        async function processMessage(message) {
+            if (isProcessing) return;
+            
+            isProcessing = true;
+            showTyping();
+            
+            try {
+                const response = await fetch('/api/chat-enhanced', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversationHistory: conversationHistory
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                hideTyping();
+
+                // Add to conversation history
+                conversationHistory.push({ role: 'user', content: message });
+                conversationHistory.push({ role: 'assistant', content: data.response });
+
+                // Check if AI wants to show vehicle recommendations
+                if (data.function_call && data.function_call.name === 'recommend_vehicles_enhanced') {
+                    addMessage('ai', data.response || "Here are your personalized recommendations:");
+                    showVehicleComparison(data.function_call.arguments);
+                } else {
+                    addMessage('ai', data.response);
+                }
+
+            } catch (error) {
+                hideTyping();
+                console.error('Error:', error);
+                addMessage('ai', 'I apologize, but I encountered an error. Please try again or contact support.');
+            } finally {
+                isProcessing = false;
+            }
+        }
+
+        function showVehicleComparison(comparisonData) {
+            currentComparison = comparisonData;
+            const comparisonHtml = generateComparisonTable(comparisonData);
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            const comparisonDiv = document.createElement('div');
+            comparisonDiv.innerHTML = comparisonHtml;
+            messagesContainer.appendChild(comparisonDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function generateComparisonTable(data) {
+            const { comparison_type, explanation, vehicles } = data;
+            
+            let tableHTML = `
+                <div class="comparison-container">
+                    <div class="comparison-header">
+                        <h3>${getComparisonTitle(comparison_type, vehicles)}</h3>
+                        ${explanation ? `<p class="explanation">${explanation}</p>` : ''}
+                    </div>
+                    
+                    <div class="vehicle-grid">
+            `;
+            
+            vehicles.forEach((vehicle, index) => {
+                tableHTML += generateVehicleCard(vehicle, comparison_type, index);
+            });
+            
+            tableHTML += `
+                    </div>
+                    <div class="refinement-options">
+                        <button onclick="refineSearch()" class="refine-btn">Refine Search</button>
+                        <button onclick="askQuestion()" class="question-btn">Ask Question</button>
+                    </div>
+                </div>
+            `;
+            
+            return tableHTML;
+        }
+
+        function generateVehicleCard(vehicle, comparison_type, index) {
+            const badge = vehicle.badge ? `<span class="badge ${vehicle.badge.toLowerCase().replace(' ', '-')}">${vehicle.badge}</span>` : '';
+            
+            return `
+                <div class="vehicle-card" data-index="${index}">
+                    ${badge}
+                    <div class="vehicle-image">
+                        <img src="${vehicle.image_url || 'https://via.placeholder.com/300x140/e9ecef/6c757d?text=Vehicle'}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" />
+                    </div>
+                    
+                    <div class="vehicle-header">
+                        <h4>${vehicle.year} ${vehicle.make} ${vehicle.model}</h4>
+                        <p class="trim">${vehicle.trim}</p>
+                        <p class="price">${vehicle.price.toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="vehicle-details">
+                        ${generateDetailsSection(vehicle, comparison_type)}
+                    </div>
+                    
+                    <div class="vehicle-footer">
+                        <p class="location">${vehicle.dealership} • ${vehicle.location}</p>
+                        <button onclick="selectVehicle(${index})" class="buy-now-btn">Buy Now</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateDetailsSection(vehicle, comparison_type) {
+            switch(comparison_type) {
+                case 'same_vehicle':
+                    return `
+                        <div class="detail-row">
+                            <span class="label">Mileage:</span>
+                            <span class="value">${vehicle.mileage?.toLocaleString() || 'N/A'} mi</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">5-Year Cost:</span>
+                            <span class="value">${vehicle.estimated_5yr_cost?.toLocaleString() || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">CarFax:</span>
+                            <span class="value">${vehicle.carfax_available ? '✓ Available' : '✗ N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Dealer Rating:</span>
+                            <span class="value">${'⭐'.repeat(Math.floor(vehicle.dealership_rating || 0))} ${vehicle.dealership_rating || 'N/A'}</span>
+                        </div>
+                    `;
+                    
+                case 'trim_comparison':
+                    return `
+                        <div class="detail-row">
+                            <span class="label">Mileage:</span>
+                            <span class="value">${vehicle.mileage?.toLocaleString() || 'N/A'} mi</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Key Features:</span>
+                            <span class="value">${vehicle.key_features?.slice(0,2).join(', ') || 'Standard'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">5-Year Cost:</span>
+                            <span class="value">${vehicle.estimated_5yr_cost?.toLocaleString() || 'N/A'}</span>
+                        </div>
+                    `;
+                    
+                case 'model_comparison':
+                    return `
+                        <div class="detail-row">
+                            <span class="label">Reliability:</span>
+                            <span class="value">${'⭐'.repeat(Math.floor(vehicle.reliability_rating || 0))}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Safety:</span>
+                            <span class="value">${'🛡️⭐'.repeat(Math.floor(vehicle.safety_rating || 0))}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">5-Year Cost:</span>
+                            <span class="value">${vehicle.estimated_5yr_cost?.toLocaleString() || 'N/A'}</span>
+                        </div>
+                    `;
+                    
+                case 'ev_comparison':
+                    return `
+                        <div class="detail-row">
+                            <span class="label">EPA Range:</span>
+                            <span class="value">🔋${vehicle.range_epa || 'N/A'} mi</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Real Range:</span>
+                            <span class="value">🌍${vehicle.range_real_world || 'N/A'} mi</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Charge Speed:</span>
+                            <span class="value">⚡${vehicle.charge_speed_max || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Port Type:</span>
+                            <span class="value">${vehicle.charge_port || 'N/A'}</span>
+                        </div>
+                    `;
+                    
+                default:
+                    return '';
+            }
+        }
+
+        function getComparisonTitle(comparison_type, vehicles) {
+            const firstVehicle = vehicles[0];
+            
+            switch(comparison_type) {
+                case 'same_vehicle':
+                    return `${firstVehicle.year} ${firstVehicle.make} ${firstVehicle.model} ${firstVehicle.trim} - Best Options`;
+                case 'trim_comparison':
+                    return `${firstVehicle.year} ${firstVehicle.make} ${firstVehicle.model} - Which Trim?`;
+                case 'model_comparison':
+                    return `Your Best Options`;
+                case 'ev_comparison':
+                    return `Electric Vehicle Comparison`;
+                default:
+                    return 'Vehicle Recommendations';
+            }
+        }
+
+        function selectVehicle(index) {
+            const vehicles = currentComparison.vehicles;
+            const selectedVehicle = vehicles[index];
+            
+            // Show service selection modal
+            const serviceModal = `
+                <div class="service-modal">
+                    <div class="service-content">
+                        <h3>Great choice!</h3>
+                        <p class="selected-price">${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model} - ${selectedVehicle.price.toLocaleString()}</p>
+                        
+                        <div class="service-options">
+                            <div class="service-option" onclick="selectService('negotiation', ${index})">
+                                <div class="service-header">
+                                    <span class="service-icon">🤝</span>
+                                    <div>
+                                        <h4>Negotiation Service</h4>
+                                        <p class="service-price">$349</p>
+                                    </div>
+                                </div>
+                                <p class="service-description">I'll call the dealer, confirm availability, and negotiate your best price</p>
+                            </div>
+                            
+                            <div class="service-option popular" onclick="selectService('concierge', ${index})">
+                                <div class="service-header">
+                                    <span class="service-icon">🏆</span>
+                                    <div>
+                                        <h4>Full Concierge Service</h4>
+                                        <p class="service-price">$549</p>
+                                    </div>
+                                    <span class="popular-badge">Most Popular</span>
+                                </div>
+                                <p class="service-description">I handle everything: price negotiation, paperwork coordination, trade-in, and delivery</p>
+                            </div>
+                        </div>
+                        
+                        <button onclick="closeServiceModal()" class="close-btn">Maybe Later</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', serviceModal);
+        }
+
+        async function selectService(serviceType, vehicleIndex) {
+            const vehicle = currentComparison.vehicles[vehicleIndex];
+            const amount = serviceType === 'negotiation' ? 349 : 549;
+            
+            try {
+                const response = await fetch('/api/create-service-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        serviceType: serviceType,
+                        vehicleInfo: vehicle,
+                        amount: amount
+                    }),
+                });
+
+                const { sessionId } = await response.json();
+                
+                // Store vehicle info for the success page
+                sessionStorage.setItem('selectedVehicle', JSON.stringify(vehicle));
+                sessionStorage.setItem('selectedService', serviceType);
+                
+                // Redirect to Stripe checkout
+                const { error } = await stripe.redirectToCheckout({ sessionId });
+                
+                if (error) {
+                    console.error('Stripe error:', error);
+                    alert('Payment failed. Please try again.');
+                }
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment failed. Please try again.');
+            }
+        }
+
+        function closeServiceModal() {
+            const modal = document.querySelector('.service-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function refineSearch() {
+            addMessage('user', 'I want to refine my search criteria');
+            processMessage('I want to refine my search criteria');
+        }
+
+        function askQuestion() {
+            const input = document.getElementById('messageInput');
+            input.focus();
+            input.placeholder = 'Ask me anything about these vehicles...';
+        }
+
+        // Handle URL parameters (for returning from payment)
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            
+            if (sessionId) {
+                // User returned from payment, show success message
+                document.getElementById('welcomeMessage').style.display = 'none';
+                addMessage('ai', '🎉 Payment successful! You should receive a confirmation email shortly. Our team will contact you within 24 hours to get started.');
+            }
         });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            localStorage.setItem('chatToken', data.chatToken);
-        }
-    } catch (error) {
-        console.error('Verification error:', error);
-    }
-}
-
-// Enter key support
-document.getElementById('messageInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        sendUserMessage();
-    }
-});
-</script>
-
+    </script>
 </body>
 </html>
