@@ -56,22 +56,17 @@ app.get('/service-success', (req, res) => {
 });
 
 // Enhanced AI Discovery System
-const DISCOVERY_SYSTEM_PROMPT = `You are an expert car buying assistant that helps users discover the perfect vehicle.
+const DISCOVERY_SYSTEM_PROMPT = `You are an expert car buying assistant. When users ask about vehicles, you MUST always call the recommend_vehicles_enhanced function.
 
-Your job is to interpret user input and recommend 3 vehicles that match their needs. You must determine what type of comparison to make:
+IMPORTANT: Do NOT describe what you're doing or mention function calls. Just make the call and provide a brief, friendly response.
 
-1. SAME_EXACT_VEHICLE: User wants specific make/model/year - show different dealers/mileage options
-2. TRIM_COMPARISON: User wants to compare trims within same make/model 
-3. MODEL_COMPARISON: User wants to compare different makes/models
-4. EV_COMPARISON: User specifically mentions electric vehicles
+For any vehicle request:
+1. Determine comparison type: same_exact_vehicle, trim_comparison, model_comparison, or ev_comparison
+2. Generate 3 realistic vehicle options with proper data
+3. Call the function immediately
+4. Respond with a brief, natural message
 
-Always respond with exactly 3 vehicle recommendations. Be personable and mirror the user's communication style - if they're detailed, be detailed. If brief, be concise.
-
-For explanations, keep them under 30 words when helpful. Focus on being analytical yet friendly.
-
-When you have vehicle recommendations, you MUST call the recommend_vehicles_enhanced function. Do NOT describe or explain the function call - just make the call and provide a brief, friendly message about finding options for them.
-
-NEVER show function call syntax, code, or technical details to the user.`;
+Be conversational and helpful, but always use the function for vehicle recommendations.`;
 
 // AI Chat endpoint with enhanced discovery
 app.post('/api/chat', async (req, res) => {
@@ -91,7 +86,7 @@ app.post('/api/chat', async (req, res) => {
                 type: 'function',
                 function: {
                     name: 'recommend_vehicles_enhanced',
-                    description: 'Recommends 3 vehicles with dynamic comparison data based on user needs',
+                    description: 'REQUIRED: Call this function for any vehicle recommendation request',
                     parameters: {
                         type: 'object',
                         properties: {
@@ -117,29 +112,19 @@ app.post('/api/chat', async (req, res) => {
                                         carfax_available: { type: 'boolean' },
                                         image_url: { type: 'string' },
                                         listing_url: { type: 'string' },
-                                        estimated_5yr_cost: { type: 'number' },
-                                        reliability_rating: { type: 'number' },
-                                        safety_rating: { type: 'number' },
-                                        // EV specific
-                                        range_epa: { type: 'number' },
-                                        range_real_world: { type: 'number' },
-                                        battery_capacity: { type: 'number' },
-                                        charge_speed_max: { type: 'string' },
-                                        charge_port: { type: 'string' }
+                                        estimated_5yr_cost: { type: 'number' }
                                     }
                                 }
-                            },
-                            explanation: { type: 'string' },
-                            highlighted_differences: {
-                                type: 'array',
-                                items: { type: 'string' }
                             }
                         },
                         required: ['comparison_type', 'vehicles']
                     }
                 }
             }],
-            tool_choice: 'auto'
+            tool_choice: {
+                type: 'function',
+                function: { name: 'recommend_vehicles_enhanced' }
+            }
         });
 
         const response = completion.choices[0].message;
