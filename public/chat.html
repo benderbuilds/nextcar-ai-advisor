@@ -166,12 +166,33 @@
             border: 1px solid #444;
         }
 
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
         .comparison-title {
             font-size: 1.25rem;
             font-weight: 600;
             color: #86C7E4;
-            margin-bottom: 1rem;
-            text-align: center;
+        }
+
+        .export-btn {
+            background-color: #333333;
+            color: #86C7E4;
+            border: 1px solid #86C7E4;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-btn:hover {
+            background-color: #86C7E4;
+            color: #1a1a1a;
         }
 
         .comparison-explanation {
@@ -188,184 +209,116 @@
             line-height: 1.6;
         }
 
-        .vehicle-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .vehicle-card {
-            background-color: #2a2a2a;
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #555;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            position: relative;
-        }
-
-        .vehicle-card:hover {
-            transform: translateY(-3px);
-            border-color: #86C7E4;
-            box-shadow: 0 8px 25px rgba(134, 199, 228, 0.1);
-        }
-
-        .vehicle-image-container {
-            position: relative;
-            margin-bottom: 1rem;
-            cursor: pointer;
-        }
-
-        .vehicle-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
+        /* Table Styles */
+        .comparison-table-container {
+            overflow-x: auto;
             border-radius: 8px;
-            background-color: #333;
-            transition: opacity 0.3s ease;
+            border: 1px solid #444;
+            margin-bottom: 1.5rem;
         }
 
-        .vehicle-image:hover {
-            opacity: 0.9;
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #2a2a2a;
+            min-width: 800px;
         }
 
-        .view-listing-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(134, 199, 228, 0.9);
-            color: #1a1a1a;
-            padding: 8px 16px;
-            border-radius: 6px;
+        .comparison-table th {
+            background-color: #333333;
+            color: #86C7E4;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #444;
             font-weight: 600;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
+            font-size: 0.9rem;
         }
 
-        .vehicle-image-container:hover .view-listing-overlay {
-            opacity: 1;
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #444;
+            color: #cccccc;
+            font-size: 0.9rem;
+            vertical-align: top;
         }
 
-        .vehicle-header {
-            margin-bottom: 1rem;
+        .comparison-table tr:hover {
+            background-color: #333333;
         }
 
-        .vehicle-title {
-            font-size: 1.2rem;
+        .vehicle-image-cell {
+            text-align: center;
+            padding: 8px;
+        }
+
+        .table-vehicle-image {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .table-vehicle-image:hover {
+            transform: scale(1.05);
+        }
+
+        .vehicle-title-cell {
             font-weight: 600;
             color: #ffffff;
-            margin-bottom: 0.5rem;
+            min-width: 150px;
         }
 
-        .vehicle-price {
-            font-size: 1.8rem;
+        .price-cell {
             font-weight: 700;
             color: #86C7E4;
-            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
-        .vehicle-location {
-            color: #cccccc;
-            font-size: 0.9rem;
+        .feature-list-cell {
+            max-width: 200px;
         }
 
-        .vehicle-specs {
-            margin-bottom: 1rem;
-        }
-
-        .spec-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .spec-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: #cccccc;
-        }
-
-        .spec-label {
-            font-weight: 500;
-        }
-
-        .spec-value {
-            color: #ffffff;
-        }
-
-        .vehicle-features {
-            margin-bottom: 1rem;
-        }
-
-        .features-title {
-            font-weight: 600;
-            color: #86C7E4;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .feature-list {
+        .feature-list-cell ul {
             list-style: none;
-            font-size: 0.85rem;
-            color: #cccccc;
+            margin: 0;
+            padding: 0;
         }
 
-        .feature-list li {
+        .feature-list-cell li {
             margin-bottom: 0.25rem;
             padding-left: 1rem;
             position: relative;
+            font-size: 0.8rem;
         }
 
-        .feature-list li:before {
+        .feature-list-cell li:before {
             content: "•";
             position: absolute;
             left: 0;
             color: #86C7E4;
         }
 
-        .pros-cons {
-            margin-bottom: 1.5rem;
+        .pros-cell, .cons-cell {
+            max-width: 180px;
         }
 
-        .pros-cons-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .pros, .cons {
-            font-size: 0.85rem;
-        }
-
-        .pros-title, .cons-title {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .pros-title {
-            color: #4ade80;
-        }
-
-        .cons-title {
-            color: #f87171;
-        }
-
-        .pros-list, .cons-list {
+        .pros-cell ul, .cons-cell ul {
             list-style: none;
-            color: #cccccc;
+            margin: 0;
+            padding: 0;
         }
 
-        .pros-list li, .cons-list li {
+        .pros-cell li {
             margin-bottom: 0.25rem;
             padding-left: 1rem;
             position: relative;
+            font-size: 0.8rem;
+            color: #4ade80;
         }
 
-        .pros-list li:before {
+        .pros-cell li:before {
             content: "+";
             position: absolute;
             left: 0;
@@ -373,7 +326,15 @@
             font-weight: bold;
         }
 
-        .cons-list li:before {
+        .cons-cell li {
+            margin-bottom: 0.25rem;
+            padding-left: 1rem;
+            position: relative;
+            font-size: 0.8rem;
+            color: #f87171;
+        }
+
+        .cons-cell li:before {
             content: "−";
             position: absolute;
             left: 0;
@@ -381,22 +342,39 @@
             font-weight: bold;
         }
 
-        .buy-now-btn {
-            width: 100%;
+        .action-cell {
+            text-align: center;
+        }
+
+        .table-action-btn {
             background-color: #86C7E4;
             color: #1a1a1a;
             border: none;
-            padding: 14px;
-            border-radius: 8px;
+            padding: 8px 16px;
+            border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1rem;
+            font-size: 0.85rem;
+            margin: 2px;
+            display: block;
+            width: 100%;
+            margin-bottom: 4px;
         }
 
-        .buy-now-btn:hover {
+        .table-action-btn:hover {
             background-color: #70b8d9;
-            transform: translateY(-2px);
+        }
+
+        .table-action-btn.secondary {
+            background-color: #333333;
+            color: #86C7E4;
+            border: 1px solid #86C7E4;
+        }
+
+        .table-action-btn.secondary:hover {
+            background-color: #86C7E4;
+            color: #1a1a1a;
         }
 
         .follow-up-questions {
@@ -434,6 +412,23 @@
             background-color: #86C7E4;
             color: #1a1a1a;
             border-color: #86C7E4;
+        }
+
+        /* Mobile Responsiveness for Table */
+        @media (max-width: 1024px) {
+            .comparison-table {
+                font-size: 0.8rem;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px;
+            }
+            
+            .table-vehicle-image {
+                width: 80px;
+                height: 60px;
+            }
         }
 
         /* Chat Input */
