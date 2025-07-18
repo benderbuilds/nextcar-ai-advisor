@@ -78,6 +78,8 @@ RECOMMENDATIONS SHOULD INCLUDE:
 - Feature comparisons and value analysis
 - Market insights and pricing context
 
+IMPORTANT: Do NOT generate any image URLs in your response. The system will handle all images automatically.
+
 Be conversational, insightful, and educational. Help them make an informed decision.`;
 
 // AI Chat endpoint with enhanced discovery
