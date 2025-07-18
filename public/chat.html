@@ -377,60 +377,6 @@
             color: #1a1a1a;
         }
 
-        .follow-up-questions {
-            margin-top: 1.5rem;
-            background-color: #2a2a2a;
-            padding: 1rem;
-            border-radius: 8px;
-            border-left: 4px solid #86C7E4;
-        }
-
-        .follow-up-title {
-            color: #86C7E4;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .question-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .question-chip {
-            background-color: #333333;
-            color: #cccccc;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid #555;
-        }
-
-        .question-chip:hover {
-            background-color: #86C7E4;
-            color: #1a1a1a;
-            border-color: #86C7E4;
-        }
-
-        /* Mobile Responsiveness for Table */
-        @media (max-width: 1024px) {
-            .comparison-table {
-                font-size: 0.8rem;
-            }
-            
-            .comparison-table th,
-            .comparison-table td {
-                padding: 8px;
-            }
-            
-            .table-vehicle-image {
-                width: 80px;
-                height: 60px;
-            }
-        }
-
         /* Chat Input */
         .chat-input-container {
             display: flex;
@@ -589,6 +535,22 @@
         }
 
         /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .comparison-table {
+                font-size: 0.8rem;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px;
+            }
+            
+            .table-vehicle-image {
+                width: 80px;
+                height: 60px;
+            }
+        }
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -596,10 +558,6 @@
 
             .chat-header h1 {
                 font-size: 2rem;
-            }
-
-            .vehicle-grid {
-                grid-template-columns: 1fr;
             }
 
             .message-content {
@@ -746,7 +704,7 @@
                 if (data.function_call && data.function_call.name === 'recommend_vehicles_enhanced') {
                     const vehicleData = JSON.parse(data.function_call.arguments);
                     addMessage(data.message, 'ai');
-                    addVehicleComparison(vehicleData);
+                    addVehicleComparisonTable(vehicleData);
                 } else {
                     addMessage(data.message, 'ai');
                 }
@@ -780,58 +738,180 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Add vehicle comparison table
-        function addVehicleComparison(vehicleData) {
+        // Add vehicle comparison TABLE (not cards)
+        function addVehicleComparisonTable(vehicleData) {
             const comparisonDiv = document.createElement('div');
             comparisonDiv.className = 'vehicle-comparison';
             
-            const title = document.createElement('div');
-            title.className = 'comparison-title';
-            title.textContent = getComparisonTitle(vehicleData.comparison_type);
+            // Header with title and export button
+            const header = document.createElement('div');
+            header.className = 'comparison-header';
+            header.innerHTML = `
+                <div class="comparison-title">${getComparisonTitle(vehicleData.comparison_type)}</div>
+                <button class="export-btn" onclick="exportToCSV(${JSON.stringify(vehicleData).replace(/"/g, '&quot;')})">📊 Export to CSV</button>
+            `;
+            comparisonDiv.appendChild(header);
             
-            const grid = document.createElement('div');
-            grid.className = 'vehicle-grid';
+            // Add explanation if provided
+            if (vehicleData.explanation) {
+                const explanation = document.createElement('div');
+                explanation.className = 'comparison-explanation';
+                explanation.innerHTML = `<p>${vehicleData.explanation}</p>`;
+                comparisonDiv.appendChild(explanation);
+            }
             
+            // Create table
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'comparison-table-container';
+            
+            const table = document.createElement('table');
+            table.className = 'comparison-table';
+            
+            // Table headers
+            const thead = document.createElement('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th>Vehicle</th>
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Mileage</th>
+                    <th>MPG</th>
+                    <th>Engine</th>
+                    <th>Location</th>
+                    <th>Dealer Rating</th>
+                    <th>5-Year Cost</th>
+                    <th>Key Features</th>
+                    <th>Pros</th>
+                    <th>Cons</th>
+                    <th>Actions</th>
+                </tr>
+            `;
+            table.appendChild(thead);
+            
+            // Table body
+            const tbody = document.createElement('tbody');
             vehicleData.vehicles.forEach((vehicle, index) => {
-                const card = createVehicleCard(vehicle, index);
-                grid.appendChild(card);
+                const row = createVehicleTableRow(vehicle, index);
+                tbody.appendChild(row);
             });
+            table.appendChild(tbody);
             
-            comparisonDiv.appendChild(title);
-            comparisonDiv.appendChild(grid);
+            tableContainer.appendChild(table);
+            comparisonDiv.appendChild(tableContainer);
+            
             chatMessages.appendChild(comparisonDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Create vehicle card
-        function createVehicleCard(vehicle, index) {
-            const card = document.createElement('div');
-            card.className = 'vehicle-card';
+        // Create vehicle table row
+        function createVehicleTableRow(vehicle, index) {
+            const row = document.createElement('tr');
             
-            card.innerHTML = `
-                <img src="${vehicle.image_url}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" class="vehicle-image" onerror="this.src='https://picsum.photos/300/150?random=${Math.floor(Math.random() * 1000)}'; this.onerror=null;">
-                <div class="vehicle-title">${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}</div>
-                <div class="vehicle-price">${vehicle.price?.toLocaleString()}</div>
-                <div class="vehicle-details">
-                    <div class="vehicle-detail">
-                        <span>Mileage:</span>
-                        <span>${vehicle.mileage?.toLocaleString()} mi</span>
-                    </div>
-                    <div class="vehicle-detail">
-                        <span>Location:</span>
-                        <span>${vehicle.location}</span>
-                    </div>
-                    <div class="vehicle-detail">
-                        <span>Dealer:</span>
-                        <span>${vehicle.dealership} ${vehicle.dealership_rating ? `(${vehicle.dealership_rating.toFixed(1)}★)` : ''}</span>
-                    </div>
-                    ${vehicle.carfax_available ? '<div class="vehicle-detail"><span>CarFax:</span><span>✓ Available</span></div>' : ''}
-                    ${vehicle.estimated_5yr_cost ? `<div class="vehicle-detail"><span>5-yr cost:</span><span>${vehicle.estimated_5yr_cost.toLocaleString()}</span></div>` : ''}
-                </div>
-                <button class="buy-now-btn" onclick="openServiceModal(${index})">Buy Now</button>
+            row.innerHTML = `
+                <td class="vehicle-title-cell">${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}</td>
+                <td class="vehicle-image-cell">
+                    <img src="${vehicle.image_url}" 
+                         alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" 
+                         class="table-vehicle-image" 
+                         onclick="openListing('${vehicle.listing_url}')"
+                         loading="lazy">
+                </td>
+                <td class="price-cell">$${vehicle.price?.toLocaleString() || 'N/A'}</td>
+                <td>${vehicle.mileage?.toLocaleString() || 'N/A'} mi</td>
+                <td>${vehicle.mpg_city || 'N/A'}/${vehicle.mpg_highway || 'N/A'}</td>
+                <td>${vehicle.engine || 'N/A'}</td>
+                <td>${vehicle.location || 'N/A'}<br><small>${vehicle.dealership || 'N/A'}</small></td>
+                <td>${vehicle.dealership_rating ? `${vehicle.dealership_rating.toFixed(1)}★` : 'N/A'}</td>
+                <td>$${vehicle.estimated_5yr_cost?.toLocaleString() || 'N/A'}</td>
+                <td class="feature-list-cell">
+                    ${vehicle.key_features && vehicle.key_features.length > 0 ? `
+                        <ul>
+                            ${vehicle.key_features.slice(0, 3).map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                    ` : 'N/A'}
+                </td>
+                <td class="pros-cell">
+                    ${vehicle.pros && vehicle.pros.length > 0 ? `
+                        <ul>
+                            ${vehicle.pros.slice(0, 3).map(pro => `<li>${pro}</li>`).join('')}
+                        </ul>
+                    ` : 'N/A'}
+                </td>
+                <td class="cons-cell">
+                    ${vehicle.cons && vehicle.cons.length > 0 ? `
+                        <ul>
+                            ${vehicle.cons.slice(0, 3).map(con => `<li>${con}</li>`).join('')}
+                        </ul>
+                    ` : 'N/A'}
+                </td>
+                <td class="action-cell">
+                    <button class="table-action-btn" onclick="openServiceModal(${index})">Get This Car</button>
+                    <button class="table-action-btn secondary" onclick="openListing('${vehicle.listing_url}')">View Listing</button>
+                </td>
             `;
             
-            return card;
+            return row;
+        }
+
+        // Export to CSV function
+        function exportToCSV(vehicleData) {
+            const headers = [
+                'Vehicle',
+                'Year',
+                'Make',
+                'Model',
+                'Trim',
+                'Price',
+                'Mileage',
+                'MPG City',
+                'MPG Highway',
+                'Engine',
+                'Drivetrain',
+                'Location',
+                'Dealership',
+                'Dealer Rating',
+                '5-Year Cost',
+                'Key Features',
+                'Pros',
+                'Cons',
+                'Listing URL'
+            ];
+            
+            const rows = vehicleData.vehicles.map(vehicle => [
+                `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}`,
+                vehicle.year,
+                vehicle.make,
+                vehicle.model,
+                vehicle.trim || '',
+                vehicle.price || '',
+                vehicle.mileage || '',
+                vehicle.mpg_city || '',
+                vehicle.mpg_highway || '',
+                vehicle.engine || '',
+                vehicle.drivetrain || '',
+                vehicle.location || '',
+                vehicle.dealership || '',
+                vehicle.dealership_rating || '',
+                vehicle.estimated_5yr_cost || '',
+                vehicle.key_features ? vehicle.key_features.join('; ') : '',
+                vehicle.pros ? vehicle.pros.join('; ') : '',
+                vehicle.cons ? vehicle.cons.join('; ') : '',
+                vehicle.listing_url || ''
+            ]);
+            
+            const csvContent = [headers, ...rows]
+                .map(row => row.map(field => `"${field}"`).join(','))
+                .join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `vehicle_comparison_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         // Get comparison title based on type
@@ -850,6 +930,13 @@
             }
         }
 
+        // Open listing in new tab
+        function openListing(url) {
+            if (url && url !== '#') {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }
+        }
+
         // Show/hide typing indicator
         function showTypingIndicator() {
             typingIndicator.style.display = 'flex';
@@ -861,22 +948,23 @@
 
         // Service modal functions
         function openServiceModal(vehicleIndex) {
-            // Get the vehicle data from the last comparison
             const lastComparison = document.querySelector('.vehicle-comparison:last-child');
             if (lastComparison) {
-                const vehicleCards = lastComparison.querySelectorAll('.vehicle-card');
-                if (vehicleCards[vehicleIndex]) {
-                    const title = vehicleCards[vehicleIndex].querySelector('.vehicle-title').textContent;
-                    const price = vehicleCards[vehicleIndex].querySelector('.vehicle-price').textContent;
+                const rows = lastComparison.querySelectorAll('tbody tr');
+                if (rows[vehicleIndex]) {
+                    const titleCell = rows[vehicleIndex].querySelector('.vehicle-title-cell');
+                    const priceCell = rows[vehicleIndex].querySelector('.price-cell');
                     
-                    selectedVehicleData = {
-                        title: title,
-                        price: price,
-                        index: vehicleIndex
-                    };
-                    
-                    document.getElementById('selectedVehicle').textContent = `${title} - ${price}`;
-                    serviceModal.style.display = 'block';
+                    if (titleCell && priceCell) {
+                        selectedVehicleData = {
+                            title: titleCell.textContent,
+                            price: priceCell.textContent,
+                            index: vehicleIndex
+                        };
+                        
+                        document.getElementById('selectedVehicle').textContent = `${selectedVehicleData.title} - ${selectedVehicleData.price}`;
+                        serviceModal.style.display = 'block';
+                    }
                 }
             }
         }
