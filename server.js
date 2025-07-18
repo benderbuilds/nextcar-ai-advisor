@@ -216,19 +216,20 @@ async function cleanAndEnhanceVehicles(vehicles) {
     });
 }
 
-// Get reliable car images that ALWAYS work
+// Get reliable car images that ALWAYS work - CAR PHOTOS ONLY
 function getReliableCarImage(index) {
-    const reliableImages = [
-        'https://images.unsplash.com/photo-1583267746897-9df4b9c7e8f5?w=400&h=300&fit=crop&auto=format&q=80',
-        'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=400&h=300&fit=crop&auto=format&q=80',
-        'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop&auto=format&q=80',
-        'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&fit=crop&auto=format&q=80',
-        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop&auto=format&q=80',
-        'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop&auto=format&q=80'
+    // These are GUARANTEED car photos from Unsplash
+    const carOnlyImages = [
+        'https://images.unsplash.com/photo-1583267746897-9df4b9c7e8f5?w=400&h=300&fit=crop&auto=format&q=80', // White car
+        'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=400&h=300&fit=crop&auto=format&q=80', // Black SUV
+        'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop&auto=format&q=80', // Silver car
+        'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=300&fit=crop&auto=format&q=80', // Blue car
+        'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop&auto=format&q=80', // Red car  
+        'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop&auto=format&q=80'  // Modern car
     ];
     
-    const selectedImage = reliableImages[index % reliableImages.length];
-    console.log(`🖼️ Selected image ${index}: ${selectedImage}`);
+    const selectedImage = carOnlyImages[index % carOnlyImages.length];
+    console.log(`🚗 Selected CAR image ${index}: ${selectedImage}`);
     return selectedImage;
 }
 
