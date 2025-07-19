@@ -460,11 +460,19 @@
                     body: JSON.stringify(userData),
                 });
                 
-                const { response } = await res.json();
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                
+                const data = await res.json();
+                console.log('API response:', data); // Debug log
                 
                 // Remove loading indicator
                 const loadingEl = chatBox.querySelector('.loading');
                 if (loadingEl) loadingEl.remove();
+                
+                // Check if we have a response
+                const response = data.response || data.fallback_response || 'Sorry, I couldn\'t generate recommendations right now.';
                 
                 // Display AI response
                 chatBox.innerHTML += `
@@ -484,6 +492,7 @@
                     <div class="ai-response">
                         <h3>Oops! Something went wrong</h3>
                         <p>I'm having trouble finding recommendations right now. Please try again or contact our support team.</p>
+                        <p><strong>Error details:</strong> ${error.message}</p>
                     </div>
                 `;
             }
@@ -493,14 +502,25 @@
         }
 
         function formatAIResponse(response) {
-            // Basic formatting for better readability
-            return response
-                .replace(/\*\*(.*?)\*\*/g, '<h4>$1</h4>')
-                .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
-                .replace(/\n\n/g, '</p><p>')
-                .replace(/\n/g, '<br>')
-                .replace(/^/, '<p>')
-                .replace(/$/, '</p>');
+            // Check if response exists and is a string
+            if (!response || typeof response !== 'string') {
+                console.error('formatAIResponse received invalid input:', response);
+                return '<p>Sorry, I couldn\'t format the response properly.</p>';
+            }
+            
+            try {
+                // Basic formatting for better readability
+                return response
+                    .replace(/\*\*(.*?)\*\*/g, '<h4>$1</h4>')
+                    .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/^/, '<p>')
+                    .replace(/$/, '</p>');
+            } catch (error) {
+                console.error('Error formatting AI response:', error);
+                return `<p>${response}</p>`;
+            }
         }
 
         // Start the conversation
