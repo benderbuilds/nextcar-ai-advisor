@@ -380,7 +380,7 @@ app.post('/api/recommend', async (req, res) => {
         
         console.log('🤖 Calling OpenAI...');
         
-        // Call OpenAI
+        // Call OpenAI with better error handling
         const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -388,22 +388,37 @@ app.post('/api/recommend', async (req, res) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'gpt-4',
+                model: 'gpt-4o-mini', // Use the more reliable model
                 messages: [{ 
                     role: 'user', 
                     content: prompt 
                 }],
                 temperature: 0.7,
-                max_tokens: 2000
+                max_tokens: 1500
             }),
         });
         
+        console.log('🤖 OpenAI response status:', aiResponse.status);
+        
         if (!aiResponse.ok) {
-            throw new Error(`OpenAI API error: ${aiResponse.status}`);
+            const errorData = await aiResponse.json().catch(() => ({}));
+            console.error('❌ OpenAI API error details:', errorData);
+            throw new Error(`OpenAI API error: ${aiResponse.status} - ${errorData.error?.message || 'Unknown error'}`);
         }
         
         const data = await aiResponse.json();
+        
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            console.error('❌ Invalid OpenAI response structure:', data);
+            throw new Error('Invalid response from OpenAI');
+        }
+        
         const response = data.choices[0].message.content;
+        
+        if (!response) {
+            console.error('❌ Empty response from OpenAI');
+            throw new Error('Empty response from OpenAI');
+        }
         
         console.log('✅ Generated recommendations successfully');
         
