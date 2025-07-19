@@ -315,7 +315,128 @@ app.post('/api/create-concierge-payment', async (req, res) => {
     }
 });
 
-// Contact form endpoint
+// Enhanced recommendation endpoint with MarketCheck integration
+app.post('/api/recommend', async (req, res) => {
+    try {
+        const { vehicle_condition, body_style, budget, use_case, priorities, zip_code } = req.body;
+        
+        console.log('🔍 Recommendation request:', req.body);
+        
+        // Parse price range
+        const budgetParts = budget.split('-');
+        const min_price = parseInt(budgetParts[0]) || 0;
+        const max_price = parseInt(budgetParts[1]) || 100000;
+        
+        console.log('💰 Price range:', min_price, 'to', max_price);
+        
+        let listings = null;
+        
+        // Try MarketCheck API if available
+        if (process.env.MARKETCHECK_API_KEY) {
+            try {
+                console.log('🔑 Calling MarketCheck API...');
+                
+                const marketCheckUrl = `https://api.marketcheck.com/v2/search/car/active?api_key=${process.env.MARKETCHECK_API_KEY}&zip=${zip_code}&price_min=${min_price}&price_max=${max_price}&rows=10&start=0`;
+                
+                const response = await fetch(marketCheckUrl);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    listings = data.listings || [];
+                    console.log('✅ MarketCheck returned', listings.length, 'listings');
+                } else {
+                    console.log('❌ MarketCheck API error:', response.status);
+                }
+            } catch (error) {
+                console.log('❌ MarketCheck API failed:', error.message);
+            }
+        } else {
+            console.log('⚠️ No MarketCheck API key found');
+        }
+        
+        // Create AI prompt
+        const prompt = `
+        The user is shopping for a ${vehicle_condition} ${body_style} in the ${min_price}-${max_price} range.
+        It's for: ${use_case}
+        Their priorities are: ${priorities}
+        Location: ${zip_code}
+        
+        ${listings && listings.length > 0 ? 
+            `Based on these real listings: ${JSON.stringify(listings.slice(0, 5))}` : 
+            'Based on market knowledge (no real-time listings available)'
+        }
+        
+        Please recommend 3 specific vehicles that match their criteria. For each vehicle:
+        
+        **Vehicle Name** (Year Make Model Trim)
+        - **Price**: Estimated price range
+        - **Why it fits**: 2-3 reasons why this matches their needs
+        - **Key features**: 3-4 standout features
+        - **Pros**: 2-3 advantages
+        - **Cons**: 1-2 potential drawbacks
+        
+        Format your response with clear headings and bullet points. Be specific about model years and trim levels.
+        `;
+        
+        console.log('🤖 Calling OpenAI...');
+        
+        // Call OpenAI
+        const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: 'gpt-4',
+                messages: [{ 
+                    role: 'user', 
+                    content: prompt 
+                }],
+                temperature: 0.7,
+                max_tokens: 2000
+            }),
+        });
+        
+        if (!aiResponse.ok) {
+            throw new Error(`OpenAI API error: ${aiResponse.status}`);
+        }
+        
+        const data = await aiResponse.json();
+        const response = data.choices[0].message.content;
+        
+        console.log('✅ Generated recommendations successfully');
+        
+        res.json({ 
+            response: response,
+            listings_found: listings ? listings.length : 0,
+            user_criteria: {
+                vehicle_condition,
+                body_style,
+                budget: `${min_price}-${max_price}`,
+                use_case,
+                priorities,
+                location: zip_code
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Recommendation API Error:', error);
+        res.status(500).json({ 
+            error: 'Failed to generate recommendations',
+            fallback_response: `I apologize, but I'm having trouble accessing our recommendation system right now. 
+            
+Based on your criteria (${req.body.body_style || 'vehicle'} in the ${req.body.budget || 'your budget'} range), here are some general suggestions:
+
+**Popular Options:**
+- Toyota Camry or Honda Accord (reliable sedans)
+- Toyota RAV4 or Honda CR-V (versatile SUVs)  
+- Ford F-150 (if you need a truck)
+
+Please try again in a moment, or contact our support team for personalized assistance.`
+        });
+    }
+});
 app.post('/contact', async (req, res) => {
     try {
         const { name, email, phone, subject, message } = req.body;
