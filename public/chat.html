@@ -68,7 +68,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
             width: 100%;
             padding: 20px;
@@ -97,298 +97,62 @@
             font-size: 1.1rem;
         }
 
-        /* Chat Messages */
-        .chat-messages {
+        /* Chat Box */
+        #chat-box {
             flex: 1;
             overflow-y: auto;
             padding: 1rem;
             background-color: #2a2a2a;
             border-radius: 12px;
-            margin-bottom: 1rem;
             border: 1px solid #444;
         }
 
-        .message {
-            margin-bottom: 1.5rem;
-            display: flex;
-            gap: 1rem;
-        }
-
-        .message.user {
-            flex-direction: row-reverse;
-        }
-
-        .message-content {
-            max-width: 70%;
-            padding: 1rem;
+        /* Chat Messages */
+        .chat-prompt {
+            background-color: #333333;
+            padding: 1.5rem;
             border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #86C7E4;
+            font-size: 1.1rem;
             line-height: 1.6;
         }
 
-        .message.user .message-content {
+        .user-response {
             background-color: #86C7E4;
             color: #1a1a1a;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            margin-left: 2rem;
+            font-weight: 500;
         }
 
-        .message.ai .message-content {
-            background-color: #333333;
+        /* Input Styles */
+        .chat-input {
+            margin-bottom: 2rem;
+        }
+
+        .chat-input button {
+            background-color: #444;
             color: #ffffff;
             border: 1px solid #555;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-
-        .message.user .message-avatar {
-            background-color: #86C7E4;
-            color: #1a1a1a;
-        }
-
-        .message.ai .message-avatar {
-            background-color: #555;
-            color: #ffffff;
-        }
-
-        /* Vehicle Comparison Table */
-        .vehicle-comparison {
-            margin: 1.5rem 0;
-            background-color: #1a1a1a;
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #444;
-        }
-
-        .comparison-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .comparison-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #86C7E4;
-        }
-
-        .export-btn {
-            background-color: #333333;
-            color: #86C7E4;
-            border: 1px solid #86C7E4;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 0.5rem 0.5rem 0.5rem 0;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: 500;
         }
 
-        .export-btn:hover {
+        .chat-input button:hover {
             background-color: #86C7E4;
             color: #1a1a1a;
+            border-color: #86C7E4;
         }
 
-        .comparison-explanation {
-            background-color: #2a2a2a;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #86C7E4;
-        }
-
-        .comparison-explanation p {
-            color: #cccccc;
-            margin-bottom: 0.5rem;
-            line-height: 1.6;
-        }
-
-        /* Table Styles */
-        .comparison-table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #444;
-            margin-bottom: 1.5rem;
-        }
-
-        .comparison-table {
+        .chat-input input[type="text"] {
             width: 100%;
-            border-collapse: collapse;
-            background-color: #2a2a2a;
-            min-width: 800px;
-        }
-
-        .comparison-table th {
-            background-color: #333333;
-            color: #86C7E4;
-            padding: 12px;
-            text-align: left;
-            border-bottom: 2px solid #444;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .comparison-table td {
-            padding: 12px;
-            border-bottom: 1px solid #444;
-            color: #cccccc;
-            font-size: 0.9rem;
-            vertical-align: top;
-        }
-
-        .comparison-table tr:hover {
-            background-color: #333333;
-        }
-
-        .vehicle-image-cell {
-            text-align: center;
-            padding: 8px;
-        }
-
-        .table-vehicle-image {
-            width: 120px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .table-vehicle-image:hover {
-            transform: scale(1.05);
-        }
-
-        .vehicle-title-cell {
-            font-weight: 600;
-            color: #ffffff;
-            min-width: 150px;
-        }
-
-        .price-cell {
-            font-weight: 700;
-            color: #86C7E4;
-            font-size: 1.1rem;
-        }
-
-        .feature-list-cell {
-            max-width: 200px;
-        }
-
-        .feature-list-cell ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .feature-list-cell li {
-            margin-bottom: 0.25rem;
-            padding-left: 1rem;
-            position: relative;
-            font-size: 0.8rem;
-        }
-
-        .feature-list-cell li:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #86C7E4;
-        }
-
-        .pros-cell, .cons-cell {
-            max-width: 180px;
-        }
-
-        .pros-cell ul, .cons-cell ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .pros-cell li {
-            margin-bottom: 0.25rem;
-            padding-left: 1rem;
-            position: relative;
-            font-size: 0.8rem;
-            color: #4ade80;
-        }
-
-        .pros-cell li:before {
-            content: "+";
-            position: absolute;
-            left: 0;
-            color: #4ade80;
-            font-weight: bold;
-        }
-
-        .cons-cell li {
-            margin-bottom: 0.25rem;
-            padding-left: 1rem;
-            position: relative;
-            font-size: 0.8rem;
-            color: #f87171;
-        }
-
-        .cons-cell li:before {
-            content: "−";
-            position: absolute;
-            left: 0;
-            color: #f87171;
-            font-weight: bold;
-        }
-
-        .action-cell {
-            text-align: center;
-        }
-
-        .table-action-btn {
-            background-color: #86C7E4;
-            color: #1a1a1a;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-            margin: 2px;
-            display: block;
-            width: 100%;
-            margin-bottom: 4px;
-        }
-
-        .table-action-btn:hover {
-            background-color: #70b8d9;
-        }
-
-        .table-action-btn.secondary {
-            background-color: #333333;
-            color: #86C7E4;
-            border: 1px solid #86C7E4;
-        }
-
-        .table-action-btn.secondary:hover {
-            background-color: #86C7E4;
-            color: #1a1a1a;
-        }
-
-        /* Chat Input */
-        .chat-input-container {
-            display: flex;
-            gap: 1rem;
-            padding: 1rem;
-            background-color: #2a2a2a;
-            border-radius: 12px;
-            border: 1px solid #444;
-        }
-
-        .chat-input {
-            flex: 1;
             padding: 12px;
             background-color: #333333;
             border: 1px solid #555;
@@ -396,161 +160,139 @@
             color: #ffffff;
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
+            margin-top: 0.5rem;
         }
 
-        .chat-input:focus {
+        .chat-input input[type="text"]:focus {
             outline: none;
             border-color: #86C7E4;
         }
 
-        .send-btn {
-            background-color: #86C7E4;
-            color: #1a1a1a;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .send-btn:hover {
-            background-color: #70b8d9;
-        }
-
-        .send-btn:disabled {
-            background-color: #555;
-            color: #888;
-            cursor: not-allowed;
-        }
-
-        /* Service Selection Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #2a2a2a;
+        /* AI Response */
+        .ai-response {
+            background-color: #1a1a1a;
             padding: 2rem;
             border-radius: 12px;
+            margin: 2rem 0;
             border: 1px solid #444;
-            max-width: 500px;
-            width: 90%;
+            line-height: 1.7;
+            font-size: 1.05rem;
         }
 
-        .modal-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .modal-header h2 {
+        .ai-response h3 {
             color: #86C7E4;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
         }
 
-        .service-option {
-            background-color: #333333;
-            padding: 1.5rem;
-            border-radius: 8px;
+        .ai-response h4 {
+            color: #ffffff;
+            margin: 1.5rem 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .ai-response ul {
+            margin-left: 1.5rem;
             margin-bottom: 1rem;
-            border: 1px solid #555;
+        }
+
+        .ai-response li {
+            margin-bottom: 0.5rem;
+            color: #cccccc;
+        }
+
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, #86C7E4, #70b8d9);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+            color: #1a1a1a;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta button {
+            background-color: #1a1a1a;
+            color: #86C7E4;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .service-option:hover {
-            border-color: #86C7E4;
-            background-color: #3a3a3a;
-        }
-
-        .service-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #86C7E4;
-            margin-bottom: 0.5rem;
-        }
-
-        .service-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-        }
-
-        .service-description {
-            color: #cccccc;
-            font-size: 0.9rem;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: #cccccc;
-            font-size: 1.5rem;
-            cursor: pointer;
+        .cta button:hover {
+            background-color: #333333;
+            transform: translateY(-2px);
         }
 
         /* Loading Animation */
-        .typing-indicator {
-            display: none;
+        .loading {
+            display: flex;
             align-items: center;
             gap: 0.5rem;
             color: #86C7E4;
             font-style: italic;
+            margin: 1rem 0;
         }
 
-        .typing-dots {
+        .loading-dots {
             display: flex;
             gap: 0.25rem;
         }
 
-        .typing-dot {
+        .loading-dot {
             width: 8px;
             height: 8px;
             background-color: #86C7E4;
             border-radius: 50%;
-            animation: typing 1.5s infinite;
+            animation: loading 1.5s infinite;
         }
 
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
 
-        @keyframes typing {
+        @keyframes loading {
             0%, 60%, 100% { opacity: 0.3; }
             30% { opacity: 1; }
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 1024px) {
-            .comparison-table {
-                font-size: 0.8rem;
-            }
-            
-            .comparison-table th,
-            .comparison-table td {
-                padding: 8px;
-            }
-            
-            .table-vehicle-image {
-                width: 80px;
-                height: 60px;
-            }
+        /* Progress Indicator */
+        .progress-container {
+            margin-bottom: 2rem;
         }
 
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #333;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #86C7E4;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 0.5rem;
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -560,16 +302,9 @@
                 font-size: 2rem;
             }
 
-            .message-content {
-                max-width: 85%;
-            }
-
-            .chat-input-container {
-                flex-direction: column;
-            }
-
-            .send-btn {
+            .chat-input button {
                 width: 100%;
+                margin: 0.25rem 0;
             }
         }
     </style>
@@ -589,444 +324,189 @@
 
     <div class="chat-container">
         <div class="chat-header">
-            <h1>NextCar AI</h1>
-            <p>Tell me what you're looking for and I'll find your perfect car in 60 seconds</p>
+            <h1>Find Your Perfect Car</h1>
+            <p>Answer a few quick questions and I'll find the best options for you</p>
         </div>
 
-        <div class="chat-messages" id="chatMessages">
-            <div class="message ai">
-                <div class="message-avatar">AI</div>
-                <div class="message-content">
-                    Hi! I'm your AI car advisor. Tell me what you're looking for - whether it's a specific car like "2023 Honda Pilot" or something more general like "reliable SUV for family under $35k". I'll find the perfect options for you!
-                </div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 14%"></div>
             </div>
+            <div class="progress-text" id="progressText">Step 1 of 7</div>
         </div>
 
-        <div class="typing-indicator" id="typingIndicator">
-            <span>AI is thinking</span>
-            <div class="typing-dots">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
-        </div>
-
-        <div class="chat-input-container">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Tell me what kind of car you're looking for..." maxlength="500">
-            <button class="send-btn" id="sendBtn">Send</button>
+        <div id="chat-box">
+            <!-- Chat content will be populated here -->
         </div>
     </div>
 
-    <!-- Service Selection Modal -->
-    <div class="modal" id="serviceModal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeServiceModal()">&times;</button>
-            <div class="modal-header">
-                <h2>Choose Your Service</h2>
-                <p id="selectedVehicle"></p>
-            </div>
-            
-            <div class="service-option" onclick="selectService('negotiation')">
-                <div class="service-price">$349</div>
-                <div class="service-name">🤝 Negotiation Service</div>
-                <div class="service-description">I'll call the dealer, confirm availability, and negotiate your best price</div>
-            </div>
-
-            <div class="service-option" onclick="selectService('concierge')">
-                <div class="service-price">$549</div>
-                <div class="service-name">🏆 Full Concierge</div>
-                <div class="service-description">I handle everything: price negotiation, paperwork coordination, trade-in, and delivery</div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://js.stripe.com/v3/"></script>
     <script>
-        const stripe = Stripe('pk_test_51QQOjgP1234567890abcdef'); // Replace with your actual Stripe publishable key
-        let conversation = [];
-        let selectedVehicleData = null;
+        const userData = {};
+        let currentStepNumber = 1;
+        const totalSteps = 7;
 
-        // DOM elements
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const typingIndicator = document.getElementById('typingIndicator');
-        const serviceModal = document.getElementById('serviceModal');
+        // Progress tracking
+        function updateProgress(step) {
+            const progress = (step / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Step ${step} of ${totalSteps}`;
+        }
 
-        // Event listeners
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+        function askQuestion(step, prompt, options = null) {
+            const chatBox = document.getElementById('chat-box');
+            let inputField = '';
+            
+            if (options) {
+                inputField = options.map(opt => 
+                    `<button onclick="storeAnswer('${step}', '${opt}')">${opt}</button>`
+                ).join('');
+            } else {
+                const inputId = `input-${step}`;
+                inputField = `<input type="text" id="${inputId}" placeholder="Type your answer..." onkeydown="handleEnter(event, '${step}')"/>`;
             }
+            
+            chatBox.innerHTML += `
+                <div class="chat-prompt">${prompt}</div>
+                <div class="chat-input">${inputField}</div>
+            `;
+            
+            // Focus on text input if present
+            const textInput = document.getElementById(`input-${step}`);
+            if (textInput) {
+                setTimeout(() => textInput.focus(), 100);
+            }
+            
+            // Scroll to bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleEnter(e, step) {
+            if (e.key === 'Enter') {
+                const value = e.target.value.trim();
+                if (value) {
+                    storeAnswer(step, value);
+                }
+            }
+        }
+
+        function storeAnswer(step, value) {
+            userData[step] = value;
+            
+            // Show user's response
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<div class="user-response">${value}</div>`;
+            
+            // Remove input field
+            const lastInput = chatBox.querySelector('.chat-input:last-child');
+            if (lastInput) lastInput.remove();
+            
+            currentStepNumber++;
+            updateProgress(currentStepNumber - 1);
+            
+            nextStep(step);
+            
+            // Scroll to bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function nextStep(currentStep) {
+            switch (currentStep) {
+                case 'start':
+                    askQuestion('vehicle_condition', 'Are you looking for a new, used, or either type of car?', ['New', 'Used', 'Either']);
+                    break;
+                case 'vehicle_condition':
+                    askQuestion('body_style', 'What type of car are you looking for?', ['SUV', 'Sedan', 'Truck', 'Hatchback', 'Sports Car', 'Other']);
+                    break;
+                case 'body_style':
+                    askQuestion('budget', 'What\'s your price range? (e.g., 20000-40000)');
+                    break;
+                case 'budget':
+                    askQuestion('use_case', 'Who is this car for?', ['Just me', 'My family', 'Teen driver', 'Work/Business', 'Other']);
+                    break;
+                case 'use_case':
+                    askQuestion('priorities', 'What matters most to you? (Pick up to 2)', ['Reliability', 'Fuel Economy', 'Technology', 'Space', 'Safety', 'Resale Value']);
+                    break;
+                case 'priorities':
+                    askQuestion('zip_code', 'What\'s your ZIP code?');
+                    break;
+                case 'zip_code':
+                    fetchRecommendations();
+                    break;
+            }
+        }
+
+        async function fetchRecommendations() {
+            const chatBox = document.getElementById('chat-box');
+            
+            // Update progress to 100%
+            updateProgress(totalSteps);
+            
+            // Show loading indicator
+            chatBox.innerHTML += `
+                <div class="loading">
+                    <span>Finding your perfect cars</span>
+                    <div class="loading-dots">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            try {
+                const res = await fetch('/api/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData),
+                });
+                
+                const { response } = await res.json();
+                
+                // Remove loading indicator
+                const loadingEl = chatBox.querySelector('.loading');
+                if (loadingEl) loadingEl.remove();
+                
+                // Display AI response
+                chatBox.innerHTML += `
+                    <div class="ai-response">${formatAIResponse(response)}</div>
+                    <div class="cta">
+                        <p>Want us to negotiate the best deal and handle everything for you?</p>
+                        <button onclick="window.location.href='/service-success?service=preview'">Get Full Concierge Service – $549</button>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error fetching recommendations:', error);
+                const loadingEl = chatBox.querySelector('.loading');
+                if (loadingEl) loadingEl.remove();
+                
+                chatBox.innerHTML += `
+                    <div class="ai-response">
+                        <h3>Oops! Something went wrong</h3>
+                        <p>I'm having trouble finding recommendations right now. Please try again or contact our support team.</p>
+                    </div>
+                `;
+            }
+            
+            // Scroll to bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function formatAIResponse(response) {
+            // Basic formatting for better readability
+            return response
+                .replace(/\*\*(.*?)\*\*/g, '<h4>$1</h4>')
+                .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>')
+                .replace(/^/, '<p>')
+                .replace(/$/, '</p>');
+        }
+
+        // Start the conversation
+        document.addEventListener('DOMContentLoaded', () => {
+            askQuestion('start', 'Hi! I\'m your AI car advisor. Let\'s find your perfect car in just a few quick questions. 🚗', null);
         });
-
-        sendBtn.addEventListener('click', sendMessage);
-
-        // Send message function
-        async function sendMessage() {
-            const message = chatInput.value.trim();
-            if (!message) return;
-
-            // Add user message to chat
-            addMessage(message, 'user');
-            chatInput.value = '';
-            sendBtn.disabled = true;
-            showTypingIndicator();
-
-            // Add to conversation
-            conversation.push({ role: 'user', content: message });
-
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        conversation: conversation
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                hideTypingIndicator();
-                
-                // Add AI response to conversation
-                conversation.push({ role: 'assistant', content: data.message });
-
-                // Check if AI returned vehicle recommendations
-                if (data.function_call && data.function_call.name === 'recommend_vehicles_enhanced') {
-                    const vehicleData = JSON.parse(data.function_call.arguments);
-                    addMessage(data.message, 'ai');
-                    addVehicleComparisonTable(vehicleData);
-                } else {
-                    addMessage(data.message, 'ai');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                hideTypingIndicator();
-                addMessage('Sorry, I encountered an error. Please try again.', 'ai');
-            } finally {
-                sendBtn.disabled = false;
-            }
-        }
-
-        // Add message to chat
-        function addMessage(content, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = sender === 'user' ? 'You' : 'AI';
-            
-            const messageContent = document.createElement('div');
-            messageContent.className = 'message-content';
-            messageContent.textContent = content;
-            
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(messageContent);
-            
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Add vehicle comparison TABLE (not cards)
-        function addVehicleComparisonTable(vehicleData) {
-            const comparisonDiv = document.createElement('div');
-            comparisonDiv.className = 'vehicle-comparison';
-            
-            // Header with title and export button
-            const header = document.createElement('div');
-            header.className = 'comparison-header';
-            header.innerHTML = `
-                <div class="comparison-title">${getComparisonTitle(vehicleData.comparison_type)}</div>
-                <button class="export-btn" onclick="exportToCSV(${JSON.stringify(vehicleData).replace(/"/g, '&quot;')})">📊 Export to CSV</button>
-            `;
-            comparisonDiv.appendChild(header);
-            
-            // Add explanation if provided
-            if (vehicleData.explanation) {
-                const explanation = document.createElement('div');
-                explanation.className = 'comparison-explanation';
-                explanation.innerHTML = `<p>${vehicleData.explanation}</p>`;
-                comparisonDiv.appendChild(explanation);
-            }
-            
-            // Create table
-            const tableContainer = document.createElement('div');
-            tableContainer.className = 'comparison-table-container';
-            
-            const table = document.createElement('table');
-            table.className = 'comparison-table';
-            
-            // Table headers
-            const thead = document.createElement('thead');
-            thead.innerHTML = `
-                <tr>
-                    <th>Vehicle</th>
-                    <th>Image</th>
-                    <th>Price</th>
-                    <th>Mileage</th>
-                    <th>MPG</th>
-                    <th>Engine</th>
-                    <th>Location</th>
-                    <th>Dealer Rating</th>
-                    <th>5-Year Cost</th>
-                    <th>Key Features</th>
-                    <th>Pros</th>
-                    <th>Cons</th>
-                    <th>Actions</th>
-                </tr>
-            `;
-            table.appendChild(thead);
-            
-            // Table body
-            const tbody = document.createElement('tbody');
-            vehicleData.vehicles.forEach((vehicle, index) => {
-                const row = createVehicleTableRow(vehicle, index);
-                tbody.appendChild(row);
-            });
-            table.appendChild(tbody);
-            
-            tableContainer.appendChild(table);
-            comparisonDiv.appendChild(tableContainer);
-            
-            chatMessages.appendChild(comparisonDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Create vehicle table row
-        function createVehicleTableRow(vehicle, index) {
-            const row = document.createElement('tr');
-            
-            row.innerHTML = `
-                <td class="vehicle-title-cell">${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}</td>
-                <td class="vehicle-image-cell">
-                    <img src="${vehicle.image_url}" 
-                         alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" 
-                         class="table-vehicle-image" 
-                         onclick="openListing('${vehicle.listing_url}')"
-                         loading="lazy">
-                </td>
-                <td class="price-cell">$${vehicle.price?.toLocaleString() || 'N/A'}</td>
-                <td>${vehicle.mileage?.toLocaleString() || 'N/A'} mi</td>
-                <td>${vehicle.mpg_city || 'N/A'}/${vehicle.mpg_highway || 'N/A'}</td>
-                <td>${vehicle.engine || 'N/A'}</td>
-                <td>${vehicle.location || 'N/A'}<br><small>${vehicle.dealership || 'N/A'}</small></td>
-                <td>${vehicle.dealership_rating ? `${vehicle.dealership_rating.toFixed(1)}★` : 'N/A'}</td>
-                <td>$${vehicle.estimated_5yr_cost?.toLocaleString() || 'N/A'}</td>
-                <td class="feature-list-cell">
-                    ${vehicle.key_features && vehicle.key_features.length > 0 ? `
-                        <ul>
-                            ${vehicle.key_features.slice(0, 3).map(feature => `<li>${feature}</li>`).join('')}
-                        </ul>
-                    ` : 'N/A'}
-                </td>
-                <td class="pros-cell">
-                    ${vehicle.pros && vehicle.pros.length > 0 ? `
-                        <ul>
-                            ${vehicle.pros.slice(0, 3).map(pro => `<li>${pro}</li>`).join('')}
-                        </ul>
-                    ` : 'N/A'}
-                </td>
-                <td class="cons-cell">
-                    ${vehicle.cons && vehicle.cons.length > 0 ? `
-                        <ul>
-                            ${vehicle.cons.slice(0, 3).map(con => `<li>${con}</li>`).join('')}
-                        </ul>
-                    ` : 'N/A'}
-                </td>
-                <td class="action-cell">
-                    <button class="table-action-btn" onclick="openServiceModal(${index})">Get This Car</button>
-                    <button class="table-action-btn secondary" onclick="openListing('${vehicle.listing_url}')">View Listing</button>
-                </td>
-            `;
-            
-            return row;
-        }
-
-        // Export to CSV function
-        function exportToCSV(vehicleData) {
-            const headers = [
-                'Vehicle',
-                'Year',
-                'Make',
-                'Model',
-                'Trim',
-                'Price',
-                'Mileage',
-                'MPG City',
-                'MPG Highway',
-                'Engine',
-                'Drivetrain',
-                'Location',
-                'Dealership',
-                'Dealer Rating',
-                '5-Year Cost',
-                'Key Features',
-                'Pros',
-                'Cons',
-                'Listing URL'
-            ];
-            
-            const rows = vehicleData.vehicles.map(vehicle => [
-                `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}`,
-                vehicle.year,
-                vehicle.make,
-                vehicle.model,
-                vehicle.trim || '',
-                vehicle.price || '',
-                vehicle.mileage || '',
-                vehicle.mpg_city || '',
-                vehicle.mpg_highway || '',
-                vehicle.engine || '',
-                vehicle.drivetrain || '',
-                vehicle.location || '',
-                vehicle.dealership || '',
-                vehicle.dealership_rating || '',
-                vehicle.estimated_5yr_cost || '',
-                vehicle.key_features ? vehicle.key_features.join('; ') : '',
-                vehicle.pros ? vehicle.pros.join('; ') : '',
-                vehicle.cons ? vehicle.cons.join('; ') : '',
-                vehicle.listing_url || ''
-            ]);
-            
-            const csvContent = [headers, ...rows]
-                .map(row => row.map(field => `"${field}"`).join(','))
-                .join('\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', `vehicle_comparison_${new Date().toISOString().split('T')[0]}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Get comparison title based on type
-        function getComparisonTitle(type) {
-            switch (type) {
-                case 'same_exact_vehicle':
-                    return 'Best Price Options Found';
-                case 'trim_comparison':
-                    return 'Trim Level Comparison';
-                case 'model_comparison':
-                    return 'Model Comparison';
-                case 'ev_comparison':
-                    return 'Electric Vehicle Comparison';
-                default:
-                    return 'Your Vehicle Options';
-            }
-        }
-
-        // Open listing in new tab
-        function openListing(url) {
-            if (url && url !== '#') {
-                window.open(url, '_blank', 'noopener,noreferrer');
-            }
-        }
-
-        // Show/hide typing indicator
-        function showTypingIndicator() {
-            typingIndicator.style.display = 'flex';
-        }
-
-        function hideTypingIndicator() {
-            typingIndicator.style.display = 'none';
-        }
-
-        // Service modal functions
-        function openServiceModal(vehicleIndex) {
-            const lastComparison = document.querySelector('.vehicle-comparison:last-child');
-            if (lastComparison) {
-                const rows = lastComparison.querySelectorAll('tbody tr');
-                if (rows[vehicleIndex]) {
-                    const titleCell = rows[vehicleIndex].querySelector('.vehicle-title-cell');
-                    const priceCell = rows[vehicleIndex].querySelector('.price-cell');
-                    
-                    if (titleCell && priceCell) {
-                        selectedVehicleData = {
-                            title: titleCell.textContent,
-                            price: priceCell.textContent,
-                            index: vehicleIndex
-                        };
-                        
-                        document.getElementById('selectedVehicle').textContent = `${selectedVehicleData.title} - ${selectedVehicleData.price}`;
-                        serviceModal.style.display = 'block';
-                    }
-                }
-            }
-        }
-
-        function closeServiceModal() {
-            serviceModal.style.display = 'none';
-            selectedVehicleData = null;
-        }
-
-        // Service selection
-        async function selectService(serviceType) {
-            if (!selectedVehicleData) return;
-
-            const customerData = {
-                name: prompt('Please enter your full name:'),
-                email: prompt('Please enter your email address:'),
-                phone: prompt('Please enter your phone number (optional):') || ''
-            };
-
-            if (!customerData.name || !customerData.email) {
-                alert('Name and email are required to proceed.');
-                return;
-            }
-
-            try {
-                const endpoint = serviceType === 'negotiation' ? '/api/create-negotiation-payment' : '/api/create-concierge-payment';
-                
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        vehicle: {
-                            title: selectedVehicleData.title,
-                            price: selectedVehicleData.price
-                        },
-                        customer: customerData
-                    })
-                });
-
-                const { sessionId } = await response.json();
-                
-                // Redirect to Stripe Checkout
-                const { error } = await stripe.redirectToCheckout({ sessionId });
-                
-                if (error) {
-                    console.error('Stripe error:', error);
-                    alert('Payment processing error. Please try again.');
-                }
-            } catch (error) {
-                console.error('Payment error:', error);
-                alert('Error creating payment. Please try again.');
-            }
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target === serviceModal) {
-                closeServiceModal();
-            }
-        }
     </script>
 </body>
 </html>
