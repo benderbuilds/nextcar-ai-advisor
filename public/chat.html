@@ -68,7 +68,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
             width: 100%;
             padding: 20px;
@@ -101,36 +101,41 @@
         #chat-box {
             flex: 1;
             overflow-y: auto;
-            padding: 1rem;
+            padding: 1.5rem;
             background-color: #2a2a2a;
             border-radius: 12px;
             border: 1px solid #444;
         }
 
         /* Chat Messages */
+        .chat-message {
+            margin-bottom: 1.5rem;
+        }
+
         .chat-prompt {
             background-color: #333333;
             padding: 1.5rem;
             border-radius: 12px;
             margin-bottom: 1rem;
             border-left: 4px solid #86C7E4;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             line-height: 1.6;
         }
 
         .user-response {
             background-color: #86C7E4;
             color: #1a1a1a;
-            padding: 1rem;
+            padding: 1rem 1.5rem;
             border-radius: 12px;
             margin-bottom: 1rem;
             margin-left: 2rem;
             font-weight: 500;
+            max-width: 80%;
         }
 
         /* Input Styles */
         .chat-input {
-            margin-bottom: 2rem;
+            margin-top: 1rem;
         }
 
         .chat-input button {
@@ -143,24 +148,27 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
+            font-family: 'Inter', sans-serif;
         }
 
         .chat-input button:hover {
             background-color: #86C7E4;
             color: #1a1a1a;
             border-color: #86C7E4;
+            transform: translateY(-1px);
         }
 
         .chat-input input[type="text"] {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             background-color: #333333;
-            border: 1px solid #555;
+            border: 2px solid #555;
             border-radius: 8px;
             color: #ffffff;
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
             margin-top: 0.5rem;
+            transition: border-color 0.3s ease;
         }
 
         .chat-input input[type="text"]:focus {
@@ -168,58 +176,53 @@
             border-color: #86C7E4;
         }
 
-        /* AI Response */
-        .ai-response {
-            background-color: #1a1a1a;
-            padding: 2rem;
-            border-radius: 12px;
-            margin: 2rem 0;
-            border: 1px solid #444;
-            line-height: 1.7;
-            font-size: 1.05rem;
+        .chat-input input[type="text"]:disabled {
+            background-color: #2a2a2a;
+            border-color: #444;
+            color: #888;
         }
 
-        .ai-response h3 {
+        /* Summary Section */
+        .summary-section {
+            background: linear-gradient(135deg, #2a2a2a, #333333);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid #86C7E4;
+            margin: 1rem 0;
+        }
+
+        .summary-title {
             color: #86C7E4;
-            margin-bottom: 1rem;
             font-size: 1.3rem;
-        }
-
-        .ai-response h4 {
-            color: #ffffff;
-            margin: 1.5rem 0 0.5rem 0;
-            font-size: 1.1rem;
-        }
-
-        .ai-response ul {
-            margin-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .ai-response li {
-            margin-bottom: 0.5rem;
-            color: #cccccc;
-        }
-
-        /* CTA Section */
-        .cta {
-            background: linear-gradient(135deg, #86C7E4, #70b8d9);
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            margin: 2rem 0;
-            color: #1a1a1a;
-        }
-
-        .cta p {
-            font-size: 1.2rem;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 1.5rem;
         }
 
-        .cta button {
-            background-color: #1a1a1a;
-            color: #86C7E4;
+        .summary-item {
+            display: flex;
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+        }
+
+        .summary-label {
+            min-width: 120px;
+            color: #cccccc;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .summary-actions {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #86C7E4, #70b8d9);
+            color: #1a1a1a;
             border: none;
             padding: 15px 30px;
             border-radius: 8px;
@@ -227,11 +230,12 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
         }
 
-        .cta button:hover {
-            background-color: #333333;
+        .primary-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(134, 199, 228, 0.3);
         }
 
         /* Loading Animation */
@@ -265,33 +269,6 @@
             30% { opacity: 1; }
         }
 
-        /* Progress Indicator */
-        .progress-container {
-            margin-bottom: 2rem;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background-color: #333;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background-color: #86C7E4;
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            margin-top: 0.5rem;
-            color: #cccccc;
-            font-size: 0.9rem;
-        }
-
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .nav-links {
@@ -305,6 +282,16 @@
             .chat-input button {
                 width: 100%;
                 margin: 0.25rem 0;
+            }
+
+            .summary-item {
+                flex-direction: column;
+                margin-bottom: 1rem;
+            }
+
+            .summary-label {
+                min-width: auto;
+                margin-bottom: 0.2rem;
             }
         }
     </style>
@@ -325,207 +312,340 @@
     <div class="chat-container">
         <div class="chat-header">
             <h1>Find Your Perfect Car</h1>
-            <p>Answer a few quick questions and I'll find the best options for you</p>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 14%"></div>
-            </div>
-            <div class="progress-text" id="progressText">Step 1 of 7</div>
+            <p>Just tell me what you're looking for in natural language</p>
         </div>
 
         <div id="chat-box">
-            <!-- Chat content will be populated here -->
+            <div class="chat-message">
+                <div class="chat-prompt">
+                    Hey! I'm your AI car buying assistant.<br><br>
+                    You can tell me what you're looking for — like <strong>"2022 Toyota Highlander under $35k"</strong> — or just start with something like <strong>"SUV"</strong> or <strong>"truck"</strong> and I'll help narrow it down.
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="initial-query" placeholder="Type what you're looking for..." onkeydown="handleInitial(event)">
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const userData = {};
-        let currentStepNumber = 1;
-        const totalSteps = 7;
 
-        // Progress tracking
-        function updateProgress(step) {
-            const progress = (step / totalSteps) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `Step ${step} of ${totalSteps}`;
-        }
-
-        function askQuestion(step, prompt, options = null) {
-            const chatBox = document.getElementById('chat-box');
-            let inputField = '';
-            
-            if (options) {
-                inputField = options.map(opt => 
-                    `<button onclick="storeAnswer('${step}', '${opt}')">${opt}</button>`
-                ).join('');
-            } else {
-                const inputId = `input-${step}`;
-                inputField = `<input type="text" id="${inputId}" placeholder="Type your answer..." onkeydown="handleEnter(event, '${step}')"/>`;
-            }
-            
-            chatBox.innerHTML += `
-                <div class="chat-prompt">${prompt}</div>
-                <div class="chat-input">${inputField}</div>
-            `;
-            
-            // Focus on text input if present
-            const textInput = document.getElementById(`input-${step}`);
-            if (textInput) {
-                setTimeout(() => textInput.focus(), 100);
-            }
-            
-            // Scroll to bottom
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function handleEnter(e, step) {
+        function handleInitial(e) {
             if (e.key === 'Enter') {
                 const value = e.target.value.trim();
                 if (value) {
-                    storeAnswer(step, value);
+                    userData['initial'] = value;
+                    
+                    // Show user's input
+                    showUserResponse(value);
+                    
+                    // Disable input
+                    document.getElementById('initial-query').disabled = true;
+                    
+                    // Parse the input
+                    parseInitial(value);
                 }
             }
         }
 
-        function storeAnswer(step, value) {
-            userData[step] = value;
-            
-            // Show user's response
+        function showUserResponse(text) {
             const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML += `<div class="user-response">${value}</div>`;
-            
-            // Remove input field
-            const lastInput = chatBox.querySelector('.chat-input:last-child');
-            if (lastInput) lastInput.remove();
-            
-            currentStepNumber++;
-            updateProgress(currentStepNumber - 1);
-            
-            nextStep(step);
-            
-            // Scroll to bottom
-            chatBox.scrollTop = chatBox.scrollHeight;
+            const responseDiv = document.createElement('div');
+            responseDiv.className = 'user-response';
+            responseDiv.textContent = text;
+            chatBox.appendChild(responseDiv);
+            scrollToBottom();
         }
 
-        function nextStep(currentStep) {
-            switch (currentStep) {
-                case 'start':
-                    askQuestion('vehicle_condition', 'Are you looking for a new, used, or either type of car?', ['New', 'Used', 'Either']);
-                    break;
-                case 'vehicle_condition':
-                    askQuestion('body_style', 'What type of car are you looking for?', ['SUV', 'Sedan', 'Truck', 'Hatchback', 'Sports Car', 'Other']);
-                    break;
-                case 'body_style':
-                    askQuestion('budget', 'What\'s your price range? (e.g., 20000-40000)');
-                    break;
-                case 'budget':
-                    askQuestion('use_case', 'Who is this car for?', ['Just me', 'My family', 'Teen driver', 'Work/Business', 'Other']);
-                    break;
-                case 'use_case':
-                    askQuestion('priorities', 'What matters most to you? (Pick up to 2)', ['Reliability', 'Fuel Economy', 'Technology', 'Space', 'Safety', 'Resale Value']);
-                    break;
-                case 'priorities':
-                    askQuestion('zip_code', 'What\'s your ZIP code?');
-                    break;
-                case 'zip_code':
-                    fetchRecommendations();
-                    break;
+        function appendPrompt(prompt, id = null, options = null) {
+            const chatBox = document.getElementById('chat-box');
+            let inputHTML = '';
+            
+            if (options) {
+                inputHTML = options.map(opt => 
+                    `<button onclick="storeValue('${id}', '${opt}')">${opt}</button>`
+                ).join('');
+            } else {
+                inputHTML = `<input type="text" id="${id}" placeholder="Type here..." onkeydown="handleKey(event, '${id}')"/>`;
+            }
+            
+            const newMsg = document.createElement('div');
+            newMsg.className = 'chat-message';
+            newMsg.innerHTML = `
+                <div class="chat-prompt">${prompt}</div>
+                <div class="chat-input">${inputHTML}</div>
+            `;
+            chatBox.appendChild(newMsg);
+            scrollToBottom();
+            
+            // Focus on text input if present
+            const textInput = document.getElementById(id);
+            if (textInput && textInput.type === 'text') {
+                setTimeout(() => textInput.focus(), 100);
             }
         }
 
-        async function fetchRecommendations() {
+        function handleKey(e, id) {
+            if (e.key === 'Enter') {
+                const value = e.target.value.trim();
+                if (value) {
+                    storeValue(id, value);
+                }
+            }
+        }
+
+        function storeValue(id, value) {
+            userData[id] = value;
+            
+            // Show user's response
+            showUserResponse(value);
+            
+            // Disable input
+            const input = document.getElementById(id);
+            if (input) {
+                input.disabled = true;
+                // Remove input container
+                const inputContainer = input.closest('.chat-input');
+                if (inputContainer) inputContainer.remove();
+            }
+            
+            nextStep(id);
+        }
+
+        function parseInitial(input) {
+            console.log('Parsing input:', input);
+            
+            // Enhanced regex patterns
+            const makeModelRegex = /(toyota|honda|ford|chevy|chevrolet|subaru|nissan|mazda|bmw|mercedes|audi|lexus|acura|infiniti|cadillac|lincoln|buick|gmc|ram|dodge|jeep|chrysler|kia|hyundai|genesis|volvo|jaguar|land rover|porsche|tesla|rivian|lucid)\s+([a-z0-9\s]+)?/i;
+            const priceRegex = /\$?([0-9]+)k?/gi;
+            const zipRegex = /\b\d{5}\b/;
+            const yearRegex = /(19|20)\d{2}/;
+            
+            const vehicleTypes = ['suv', 'truck', 'sedan', 'minivan', 'hatchback', 'coupe', 'convertible', 'wagon'];
+            
+            // Extract information
+            const makeModelMatch = input.match(makeModelRegex);
+            const zipMatch = input.match(zipRegex);
+            const yearMatch = input.match(yearRegex);
+            const priceMatches = [...input.matchAll(priceRegex)];
+            const typeMatch = vehicleTypes.find(type => input.toLowerCase().includes(type));
+            
+            // Store extracted data
+            if (makeModelMatch) {
+                userData['make'] = makeModelMatch[1].toLowerCase();
+                if (makeModelMatch[2]) {
+                    userData['model'] = makeModelMatch[2].trim().toLowerCase();
+                }
+            }
+            
+            if (yearMatch) {
+                userData['year'] = yearMatch[0];
+            }
+            
+            if (zipMatch) {
+                userData['zip'] = zipMatch[0];
+            }
+            
+            if (priceMatches.length) {
+                const prices = priceMatches.map(match => {
+                    let amount = parseInt(match[1]);
+                    // If it's just a number like "35", assume it's thousands
+                    if (amount < 1000) amount *= 1000;
+                    return amount;
+                });
+                userData['max_price'] = Math.max(...prices);
+            }
+            
+            if (typeMatch) {
+                userData['body_style'] = typeMatch;
+            }
+            
+            console.log('Extracted data:', userData);
+            
+            // Determine what to ask next
+            if (!userData['make'] && !userData['body_style']) {
+                appendPrompt("What type of vehicle are you looking for?", "body_style", ["SUV", "Truck", "Sedan", "Minivan", "Hatchback", "Sports Car"]);
+            } else if (!userData['max_price']) {
+                appendPrompt("What's your budget or maximum price?", "max_price");
+            } else if (!userData['zip']) {
+                appendPrompt("What ZIP code should I use to find listings near you?", "zip");
+            } else {
+                showSummary();
+            }
+        }
+
+        function nextStep(lastId) {
+            console.log('Next step after:', lastId, 'Current data:', userData);
+            
+            if (lastId === 'body_style' && !userData['max_price']) {
+                appendPrompt("What's your budget or maximum price?", "max_price");
+            } else if (lastId === 'max_price' && !userData['zip']) {
+                // Parse price if it's text
+                if (isNaN(userData['max_price'])) {
+                    const priceText = userData['max_price'].toLowerCase();
+                    const priceMatch = priceText.match(/(\d+)k?/);
+                    if (priceMatch) {
+                        let amount = parseInt(priceMatch[1]);
+                        if (amount < 1000) amount *= 1000;
+                        userData['max_price'] = amount;
+                    }
+                }
+                appendPrompt("What ZIP code should I use to find listings near you?", "zip");
+            } else {
+                showSummary();
+            }
+        }
+
+        function showSummary() {
             const chatBox = document.getElementById('chat-box');
             
-            // Update progress to 100%
-            updateProgress(totalSteps);
-            
-            // Show loading indicator
-            chatBox.innerHTML += `
-                <div class="loading">
-                    <span>Finding your perfect cars</span>
-                    <div class="loading-dots">
-                        <div class="loading-dot"></div>
-                        <div class="loading-dot"></div>
-                        <div class="loading-dot"></div>
+            const summaryHTML = `
+                <div class="chat-message">
+                    <div class="summary-section">
+                        <div class="summary-title">✅ Perfect! Here's what I'll search for:</div>
+                        
+                        ${userData.make ? `
+                        <div class="summary-item">
+                            <span class="summary-label">Make/Model:</span>
+                            <span class="summary-value">${userData.make}${userData.model ? ' ' + userData.model : ''}</span>
+                        </div>
+                        ` : ''}
+                        
+                        ${userData.year ? `
+                        <div class="summary-item">
+                            <span class="summary-label">Year:</span>
+                            <span class="summary-value">${userData.year}</span>
+                        </div>
+                        ` : ''}
+                        
+                        ${userData.body_style ? `
+                        <div class="summary-item">
+                            <span class="summary-label">Vehicle Type:</span>
+                            <span class="summary-value">${userData.body_style.charAt(0).toUpperCase() + userData.body_style.slice(1)}</span>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="summary-item">
+                            <span class="summary-label">Max Price:</span>
+                            <span class="summary-value">$${userData.max_price?.toLocaleString() || 'Not specified'}</span>
+                        </div>
+                        
+                        <div class="summary-item">
+                            <span class="summary-label">Location:</span>
+                            <span class="summary-value">${userData.zip || 'Not specified'}</span>
+                        </div>
+                        
+                        <div class="summary-actions">
+                            <button class="primary-btn" onclick="findVehicles()">Find My Perfect Cars</button>
+                        </div>
                     </div>
                 </div>
             `;
             
+            const summaryEl = document.createElement('div');
+            summaryEl.innerHTML = summaryHTML;
+            chatBox.appendChild(summaryEl);
+            scrollToBottom();
+        }
+
+        async function findVehicles() {
+            const chatBox = document.getElementById('chat-box');
+            
+            // Show loading
+            const loadingHTML = `
+                <div class="chat-message">
+                    <div class="loading">
+                        <span>Finding your perfect cars</span>
+                        <div class="loading-dots">
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const loadingEl = document.createElement('div');
+            loadingEl.innerHTML = loadingHTML;
+            chatBox.appendChild(loadingEl);
+            scrollToBottom();
+            
             try {
-                const res = await fetch('/api/recommend', {
+                // Prepare data for the API
+                const requestData = {
+                    vehicle_condition: 'Either',
+                    body_style: userData.body_style || 'Any',
+                    budget: userData.max_price ? `0-${userData.max_price}` : '0-50000',
+                    use_case: 'Personal use',
+                    priorities: 'reliability, value',
+                    zip_code: userData.zip || '50265',
+                    make: userData.make,
+                    model: userData.model,
+                    year: userData.year
+                };
+                
+                console.log('Sending request:', requestData);
+                
+                const response = await fetch('/api/recommend', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userData),
+                    body: JSON.stringify(requestData)
                 });
                 
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
+                // Remove loading
+                loadingEl.remove();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                const data = await res.json();
-                console.log('API response:', data); // Debug log
+                const data = await response.json();
                 
-                // Remove loading indicator
-                const loadingEl = chatBox.querySelector('.loading');
-                if (loadingEl) loadingEl.remove();
-                
-                // Check if we have a response
-                const response = data.response || data.fallback_response || 'Sorry, I couldn\'t generate recommendations right now.';
-                
-                // Display AI response
-                chatBox.innerHTML += `
-                    <div class="ai-response">${formatAIResponse(response)}</div>
-                    <div class="cta">
-                        <p>Want us to negotiate the best deal and handle everything for you?</p>
-                        <button onclick="window.location.href='/service-success?service=preview'">Get Full Concierge Service – $549</button>
+                // Display results
+                const resultsHTML = `
+                    <div class="chat-message">
+                        <div class="chat-prompt">
+                            ${data.response || 'Here are your recommendations!'}
+                        </div>
+                        <div class="summary-actions">
+                            <button class="primary-btn" onclick="window.location.href='/service-success?service=preview'">Get Full Concierge Service – $549</button>
+                        </div>
                     </div>
                 `;
+                
+                const resultsEl = document.createElement('div');
+                resultsEl.innerHTML = resultsHTML;
+                chatBox.appendChild(resultsEl);
+                scrollToBottom();
                 
             } catch (error) {
-                console.error('Error fetching recommendations:', error);
-                const loadingEl = chatBox.querySelector('.loading');
-                if (loadingEl) loadingEl.remove();
+                console.error('Error:', error);
+                loadingEl.remove();
                 
-                chatBox.innerHTML += `
-                    <div class="ai-response">
-                        <h3>Oops! Something went wrong</h3>
-                        <p>I'm having trouble finding recommendations right now. Please try again or contact our support team.</p>
-                        <p><strong>Error details:</strong> ${error.message}</p>
+                const errorHTML = `
+                    <div class="chat-message">
+                        <div class="chat-prompt">
+                            Sorry, I'm having trouble finding recommendations right now. Please try again or contact our support team.
+                        </div>
                     </div>
                 `;
+                
+                const errorEl = document.createElement('div');
+                errorEl.innerHTML = errorHTML;
+                chatBox.appendChild(errorEl);
+                scrollToBottom();
             }
-            
-            // Scroll to bottom
+        }
+
+        function scrollToBottom() {
+            const chatBox = document.getElementById('chat-box');
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        function formatAIResponse(response) {
-            // Check if response exists and is a string
-            if (!response || typeof response !== 'string') {
-                console.error('formatAIResponse received invalid input:', response);
-                return '<p>Sorry, I couldn\'t format the response properly.</p>';
-            }
-            
-            try {
-                // Basic formatting for better readability
-                return response
-                    .replace(/\*\*(.*?)\*\*/g, '<h4>$1</h4>')
-                    .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
-                    .replace(/\n\n/g, '</p><p>')
-                    .replace(/\n/g, '<br>')
-                    .replace(/^/, '<p>')
-                    .replace(/$/, '</p>');
-            } catch (error) {
-                console.error('Error formatting AI response:', error);
-                return `<p>${response}</p>`;
-            }
-        }
-
-        // Start the conversation
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            askQuestion('start', 'Hi! I\'m your AI car advisor. Let\'s find your perfect car in just a few quick questions. 🚗', null);
+            document.getElementById('initial-query').focus();
         });
     </script>
 </body>
